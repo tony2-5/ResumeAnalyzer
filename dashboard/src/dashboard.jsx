@@ -9,12 +9,9 @@ const Dashboard = ({ fitScore, skillsMatched, improvementSuggestions }) => {
       <div className="section">
         <h2>Resume Fit Score</h2>
         <div className="fit-score">
-          <div className="progress-bar">
-            <div
-              className="progress"
-              style={{ width: `${fitScore}%` }}
-            ></div>
-          </div>
+        <div className="progress-bar" style={{ height: "20px", width: "30%", background: "#ddd", borderRadius: "20px"}}>
+          <div className="progress" style={{ width: `${fitScore}%`, height: "100%", background: "#4caf50" }}></div>
+        </div>
           <p>{fitScore}% Match</p>
         </div>
       </div>
