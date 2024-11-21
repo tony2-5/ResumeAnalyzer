@@ -5,7 +5,7 @@ const Dashboard = ({ fitScore, skillsMatched, improvementSuggestions }) => {
     <div className="dashboard">
       <h1>Resume Analysis Results</h1>
 
-      {/* Fit Score Section */}
+      {/* Fit Score */}
       <div className="section">
         <h2>Resume Fit Score</h2>
         <div className="fit-score">
