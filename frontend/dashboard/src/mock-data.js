@@ -1,5 +1,5 @@
 export const mockData = {
-    fitScore: 85,
+    fitScore: 2,
     skillsMatched: ["Teamwork", "Python", "Data Analysis", "Project Management"],
     improvementSuggestions: [
       "Add certifications relevant to the job description.",

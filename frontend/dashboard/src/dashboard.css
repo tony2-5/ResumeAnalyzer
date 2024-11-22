@@ -25,19 +25,17 @@
   }
   
   .progress-bar {
-    background: #ddd !important;
-    border-radius: 20px !important;
-    overflow: hidden !important;
-    height: 20px !important; /* Ensure height is set */
-    margin: 10px 0 !important;
-    border: 1px solid red !important; /* Debug border */
+    background: #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 20px;
+    margin: 10px 0;
   }
   
   .progress {
-    background: #4caf50 !important;
-    height: 100% !important; /* Ensure it fills the progress-bar's height */
-    transition: width 0.3s ease !important;
-    border: 1px solid blue !important; /* Debug border */
+    background: #4caf50;
+    height: 100%;
+    transition: width 0.3s ease;
   }
   
   
