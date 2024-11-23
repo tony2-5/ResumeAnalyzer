@@ -15,7 +15,7 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Mock login
-    if (formData.username === "username" && formData.password === "jD2nD#j1l") {
+    if (formData.username === "username" && formData.password === "cs490") {
       login();
       navigate("/dashboard");
     } else {
