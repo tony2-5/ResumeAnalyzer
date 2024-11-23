@@ -7,8 +7,13 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
 from database import database
 from models import users
+import os
+from dotenv import load_dotenv
 
-SECRET_KEY = "your_secret_key"
+### Load the .env file
+load_dotenv()
+
+SECRET_KEY = os.getenv('JWT_KEY')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 

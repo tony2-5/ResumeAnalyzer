@@ -1,0 +1,8 @@
+fastapi[standard]
+sqlalchemy
+databases
+aiosqlite
+pydantic[email]
+bcrypt
+pyjwt
+python-dotenv
