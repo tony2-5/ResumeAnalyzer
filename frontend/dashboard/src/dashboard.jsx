@@ -5,7 +5,7 @@ import { mockData } from "./mock-data";
 const Dashboard = ({ 
   fitScore = mockData.fitScore, 
   skillsMatched = mockData.skillsMatched,
-  improvementSuggestions = mockData.improvementSuggestions }) => {
+  improvementSuggestions = mockData.improvementSuggestions}) => {
   return (
     <div className="dashboard">
       <h1>Resume Analysis Results</h1>

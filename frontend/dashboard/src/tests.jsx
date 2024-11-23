@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import App from "./App";
-import { AuthProvider } from "./authContext";
+import { AuthProvider } from "./auth-context";
 
 test("redirects to /login if not authenticated", () => {
   render(
@@ -25,7 +25,7 @@ test("allows access to /dashboard if authenticated", () => {
   );
 
   // Mock authentication
-  const authContext = require("./authContext");
+  const authContext = require("./auth-context");
   authContext.useAuth = () => ({ isAuthenticated: true });
 
   expect(screen.getByText(/welcome to the dashboard/i)).toBeInTheDocument();
