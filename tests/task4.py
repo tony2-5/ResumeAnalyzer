@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from backend.main import app 
-from backend.database import database, engine, metadata
+from backend.database import engine, metadata
 import pytest
 
 client = TestClient(app)
