@@ -5,8 +5,8 @@ from typing import Optional
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy import select
-from database import database
-from models import users
+from backend.database import database
+from backend.models import users
 import os
 from dotenv import load_dotenv
 

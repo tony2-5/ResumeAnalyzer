@@ -1,7 +1,7 @@
 # backend/models.py
 
 from sqlalchemy import Table, Column, Integer, String
-from database import metadata
+from backend.database import metadata
 
 users = Table(
     "users",

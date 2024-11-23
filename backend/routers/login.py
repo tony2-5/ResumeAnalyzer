@@ -2,10 +2,10 @@
 
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
-from models import users
-from schemas import UserLogin, Token
-from database import database
-from auth import verifyPassword, createAccessToken, ACCESS_TOKEN_EXPIRE_MINUTES
+from backend.models import users
+from backend.schemas import UserLogin, Token
+from backend.database import database
+from backend.auth import verifyPassword, createAccessToken, ACCESS_TOKEN_EXPIRE_MINUTES
 from datetime import timedelta
 
 router = APIRouter()
