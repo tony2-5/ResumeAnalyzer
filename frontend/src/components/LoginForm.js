@@ -9,6 +9,12 @@ const LoginForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Check if username (email) and password are provided
+        if (!email || !password) {
+            setMessage('Username and password cannot be empty');
+            return;
+        }
+
         const credentials = { username: email, password };
 
         try {
@@ -21,7 +27,7 @@ const LoginForm = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.detail || 'Something went wrong');
+                throw new Error(data.detail || 'Incorrect credentials');
             }
 
             setMessage('Login successful!');

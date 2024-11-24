@@ -34,6 +34,9 @@ def verify_password(plain_password: str, hashed_password: str):
 # Sign-Up Route 
 @router.post("/signup")
 async def signup(user: User):
+    if not user.username or not user.password:
+        raise HTTPException(status_code=400, detail="Username and password cannot be empty")
+    
     if user.username in fake_users_db:
         raise HTTPException(status_code=400, detail="Username already registered")
     
@@ -45,8 +48,11 @@ async def signup(user: User):
 # Login Route
 @router.post("/login")
 async def login(credentials: LoginRequest):
+    if not credentials.username or not credentials.password:
+        raise HTTPException(status_code=400, detail="Username and password cannot be empty")
+    
     user = fake_users_db.get(credentials.username)
     if user is None or not verify_password(credentials.password, user['hashed_password']):
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+        raise HTTPException(status_code=400, detail="Incorrect credentials")
     
     return {"message": "Login successful"}

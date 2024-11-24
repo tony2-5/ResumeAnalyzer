@@ -1,55 +1,93 @@
 // frontend/src/components/ResumeUpload.js
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 const ResumeUpload = () => {
-    const [file, setFile] = useState(null);
-    const [jobDesc, setJobDesc] = useState("");
+    const [resumeFile, setResumeFile] = useState(null);
+    const [jobDescription, setJobDescription] = useState('');
+    const [message, setMessage] = useState('');
 
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+    // Handle resume file selection
+    const handleResumeChange = (e) => {
+        setResumeFile(e.target.files[0]);
     };
 
-    const handleJobDescChange = (e) => {
-        setJobDesc(e.target.value);
+    // Handle job description input
+    const handleJobDescriptionChange = (e) => {
+        setJobDescription(e.target.value);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    // Handle resume file upload
+    const handleResumeSubmit = async () => {
+        if (!resumeFile) {
+            setMessage('Please select a resume file to upload.');
+            return;
+        }
+
         const formData = new FormData();
-        formData.append("file", file);
-        formData.append("job_desc", jobDesc);
+        formData.append('file', resumeFile);
 
         try {
-            const response = await fetch("http://127.0.0.1:8000/api/upload-resume/", {
-                method: "POST",
+            const response = await fetch('http://127.0.0.1:8000/api/resume/upload', {
+                method: 'POST',
                 body: formData,
             });
 
             if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
+                throw new Error('Failed to upload resume.');
             }
 
-            const data = await response.json();
-            console.log("Upload successful:", data);
+            setMessage('Resume uploaded successfully.');
         } catch (error) {
-            console.error("Failed to upload:", error);
+            setMessage(error.message);
+        }
+    };
+
+    // Handle job description upload
+    const handleJobDescriptionSubmit = async () => {
+        if (!jobDescription) {
+            setMessage('Please enter a job description.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('job_desc', jobDescription);
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/api/job-description/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to upload job description.');
+            }
+
+            setMessage('Job description uploaded successfully.');
+        } catch (error) {
+            setMessage(error.message);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Upload Resume:
-                <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange} />
-            </label>
-            <br />
-            <label>
-                Job Description:
-                <textarea value={jobDesc} onChange={handleJobDescChange} />
-            </label>
-            <br />
-            <button type="submit">Submit</button>
-        </form>
+        <div>
+            <h2>Upload Resume</h2>
+            <input
+                type="file"
+                accept=".pdf,.docx,.doc"
+                onChange={handleResumeChange}
+            />
+            <button onClick={handleResumeSubmit}>Upload Resume</button>
+
+            <h2>Upload Job Description</h2>
+            <textarea
+                placeholder="Enter job description"
+                value={jobDescription}
+                onChange={handleJobDescriptionChange}
+            />
+            <button onClick={handleJobDescriptionSubmit}>Upload Job Description</button>
+
+            <p>{message}</p>
+        </div>
     );
 };
 

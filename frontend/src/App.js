@@ -1,8 +1,8 @@
 // frontend/src/App.js
 import React, { useState } from 'react';
 import LoginForm from './components/LoginForm';
-import ResumeUpload from './components/ResumeUpload';
 import SignUpForm from './components/SignUpForm';
+import ResumeUpload from './components/ResumeUpload';
 
 function App() {
   const [isSignUp, setIsSignUp] = useState(false);  // Track whether to show the SignUp form
@@ -23,7 +23,7 @@ function App() {
         {isSignUp ? "Already have an account? Log in" : "Don't have an account? Sign Up"}
       </button>
 
-      {/* Always render the ResumeUpload form */}
+      {/* Only render the ResumeUpload form */}
       <ResumeUpload />
     </div>
   );

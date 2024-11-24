@@ -1,7 +1,7 @@
-// frontend/src/components/SignUp.js
+// frontend/src/components/SignUpForm.js
 import React, { useState } from 'react';
 
-const SignUp = () => {
+const SignUpForm = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -9,6 +9,12 @@ const SignUp = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Check if any fields are empty
+        if (!username || !password || !confirmPassword) {
+            setMessage('All fields are required');
+            return;
+        }
 
         if (password !== confirmPassword) {
             setMessage("Passwords do not match!");
@@ -64,4 +70,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default SignUpForm;
