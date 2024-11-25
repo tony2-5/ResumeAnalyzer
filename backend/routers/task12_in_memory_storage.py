@@ -1,40 +1,22 @@
-from fastapi import APIRouter, UploadFile, Form, HTTPException
-from uuid import uuid4
+from fastapi import APIRouter, HTTPException, Header
 
 router = APIRouter()
 
 # Temporary in-memory storage
-temp_storage = {}
+temp_storage = {
 
-@router.post("/store-resume")
-async def store_resume(resume_file: UploadFile):
-    if resume_file.content_type != "application/pdf":
-        raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
+}
 
-    # Generate session ID and mock resume text
-    session_id = str(uuid4())
-    temp_storage[session_id] = {
-        "resume_text": "Extracted text from PDF.",
-        "job_description": None,
+@router.get("/resume-data", status_code=200)
+async def get_resume_data(session_token: str = Header(...)):
+    # Check if the session_token exists in temp_storage
+    if session_token not in temp_storage:
+        raise HTTPException(status_code=404, detail="Session not found.")
+    
+    # Retrieve the data for the session
+    session_data = temp_storage[session_token]
+    
+    return {
+        "message": "Session data retrieved successfully.",
+        "data": session_data 
     }
-    return {"session_id": session_id, "message": "Resume stored successfully."}
-
-@router.post("/store-job-description")
-async def store_job_description(session_id: str = Form(...), job_description: str = Form(...)):
-    if session_id not in temp_storage:
-        raise HTTPException(status_code=404, detail="Session ID not found.")
-    temp_storage[session_id]["job_description"] = job_description
-    return {"message": "Job description stored successfully."}
-
-@router.get("/session/{session_id}")
-async def get_session_data(session_id: str):
-    if session_id not in temp_storage:
-        raise HTTPException(status_code=404, detail="Session ID not found.")
-    return temp_storage[session_id]
-
-@router.delete("/session/{session_id}")
-async def delete_session_data(session_id: str):
-    if session_id not in temp_storage:
-        raise HTTPException(status_code=404, detail="Session ID not found.")
-    del temp_storage[session_id]
-    return {"message": "Session data deleted successfully."}

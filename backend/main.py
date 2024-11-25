@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI, Request
 from backend.database import database, engine, metadata
-from backend.routers import register, login, get_user, task10_validation,task11_text_extraction, task12_in_memory_storage 
+from backend.routers import register, login, get_user, resume_upload, job_description, task12_in_memory_storage 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -25,8 +25,8 @@ app.add_middleware(
 app.include_router(register.router, prefix="/api")
 app.include_router(login.router, prefix="/api")
 app.include_router(get_user.router, prefix="/api")
-app.include_router(task10_validation.router, prefix="/api")
-app.include_router(task11_text_extraction.router, prefix="/api")
+app.include_router(resume_upload.router, prefix="/api")
+app.include_router(job_description.router, prefix="/api")
 app.include_router(task12_in_memory_storage.router, prefix="/api")
 
 # handler to capture 422 errors and make them 400
