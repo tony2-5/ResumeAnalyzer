@@ -1,11 +1,7 @@
 from fastapi.testclient import TestClient
-from api.task12_in_memory_storage import router
-from fastapi import FastAPI
+from backend.main import app 
 import os
 
-# 设置测试应用
-app = FastAPI()
-app.include_router(router, prefix="/api")
 client = TestClient(app)
 
 def test_valid_resume_upload():

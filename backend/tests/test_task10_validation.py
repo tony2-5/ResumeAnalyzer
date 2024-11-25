@@ -1,7 +1,7 @@
 # backend/tests/test_task10_validation.py
 
 from fastapi.testclient import TestClient
-from main import app  # 从 main.py 中导入 app
+from backend.main import app 
 import os
 
 client = TestClient(app)

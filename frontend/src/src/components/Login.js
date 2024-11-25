@@ -1,80 +1,67 @@
-// src/components/Login.js
-
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axiosInstance from '../api/axios';
-import { useNavigate } from 'react-router-dom';
+import "../register-login.css";
 
-function Login() {
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-    });
-    const [errorMessage, setErrorMessage] = useState('');
-    const navigate = useNavigate();
+const Login = () => {
+		const [formData, setFormData] = useState({ email: "", password: "" });
+		const [errorMessage, setErrorMessage] = useState('');
 
-    const { email, password } = formData;
+		const handleChange = (e) => {
+				setFormData({ ...formData, [e.target.name]: e.target.value });
+		};
 
-    // Handles input changes
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevState) => ({ ...prevState, [name]: value }));
-    };
+		const handleSubmit = async (e) => {
+				e.preventDefault();
 
-    // Handles form submission
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+				try {
+						const response = await axiosInstance.post('/api/login',{
+								email: formData.email,
+								password: formData.password
+						});
+						// Store token in localStorage
+						localStorage.setItem('accessToken', response.data.accessToken);
+						// reload page to navigate to dashboard
+						window.location.reload()
+				} catch (error) {
+						if (error.response && error.response.data.detail) {
+							setErrorMessage(error.response.data.detail);
+						} else {
+							setErrorMessage('An error occurred. Please try again.');
+						}
+				}
+		};
 
-        try {
-            const response = await axiosInstance.post('/api/login', {
-                email,
-                password,
-            });
-            // Store token in localStorage
-            localStorage.setItem('accessToken', response.data.accessToken);
-            // Redirect to dashboard
-            navigate('/dashboard');
-        } catch (error) {
-            if (error.response && error.response.data.detail) {
-                setErrorMessage(error.response.data.detail);
-            } else {
-                setErrorMessage('An error occurred. Please try again.');
-            }
-        }
-    };
-
-    return (
-        <div className="login-form">
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                {/* Email Input */}
-                <div>
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={email}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                {/* Password Input */}
-                <div>
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={password}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-                {/* Error Message */}
-                {errorMessage && <p className="error">{errorMessage}</p>}
-                {/* Submit Button */}
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    );
-}
+		return (
+				<div>
+						<h1>Login</h1>
+						<form onSubmit={handleSubmit}>
+								<div>
+										<label>Email: </label>
+										<input
+											type="email"
+											name="email"
+											value={formData.email}
+											onChange={handleChange}
+											required
+										/>
+								</div>
+								<div>
+										<label>Password: </label>
+										<input
+											type="password"
+											name="password"
+											value={formData.password}
+											onChange={handleChange}
+											required
+										/>
+								</div>
+								{errorMessage && <p className="error">{errorMessage}</p>}
+								<button type="submit">Login</button>
+								<p>Don’t have an account? <Link to="/register">Register here</Link>.</p>
+						</form>
+				</div>
+		);
+};
 
 export default Login;

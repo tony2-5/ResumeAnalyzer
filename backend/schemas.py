@@ -1,6 +1,6 @@
 # backend/schemas.py
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -18,3 +18,5 @@ class UserLogin(BaseModel):
 class Token(BaseModel):
     accessToken: str
     tokenType: str
+class JobDescriptionInput(BaseModel):
+    job_description: str = Field(..., max_length=5000)
