@@ -12,3 +12,7 @@
 2. From the main directory go to the frontend/src folder with `cd ./frontend/src`
 3. Run `npm install` to install dependencies
 4. Run the frontend using `npm start`
+
+### Running Frontend Tests (After project initialization)
+1. From the main directory go to the frontend/src folder with `cd ./frontend/src`
+2. Run `npm test`

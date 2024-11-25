@@ -78,6 +78,7 @@ const ResumeDescriptionUpload = ({setData}) => {
             <h2>Upload Resume</h2>
             <div className='resumeUpload'>
                 <input
+                    data-testid="resume"
                     type="file"
                     accept="application/pdf"
                     onChange={handleResumeChange}
@@ -87,6 +88,7 @@ const ResumeDescriptionUpload = ({setData}) => {
             <h2>Upload Job Description</h2>
             <div className='resumeUpload'>
                 <textarea
+                    data-testid="description"
                     placeholder="Enter job description"
                     value={jobDescription}
                     onChange={handleJobDescriptionChange}

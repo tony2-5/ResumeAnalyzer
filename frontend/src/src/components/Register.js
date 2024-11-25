@@ -20,7 +20,11 @@ const Register = () => {
 		const handleSubmit = async (e) => {
 			e.preventDefault();
 
-			// Check if passwords match
+			if (!/\S+@\S+\.\S+/.test(formData.email)) {
+				setErrorMessage('Invalid email address.');
+				return;
+			}
+
 			if (formData.password !== formData.confirmPassword) {
 					setErrorMessage('Passwords do not match.');
 					return;
@@ -50,8 +54,9 @@ const Register = () => {
 					<h1>Register</h1>
 					<form onSubmit={handleSubmit}>
 							<div>
-									<label>Email: </label>
+									<label htmlFor="registerEmail">Email: </label>
 									<input
+									id="registerEmail"
 									type="email"
 									name="email"
 									value={formData.email}
@@ -60,8 +65,9 @@ const Register = () => {
 									/>
 							</div>
 							<div>
-									<label>Username: </label>
+									<label htmlFor="username">Username: </label>
 									<input
+										id="username"
 										type="text"
 										name="username"
 										value={formData.username}
@@ -70,8 +76,10 @@ const Register = () => {
 									/>
 							</div>
 							<div>
-									<label>Password: </label>
+									<label htmlFor="registerPassword">Password: </label>
 									<input
+										id="registerPassword"
+										data-testid="registerPassword"
 										type="password"
 										name="password"
 										value={formData.password}
@@ -80,8 +88,10 @@ const Register = () => {
 									/>
 							</div>
 							<div>
-									<label>Confirm Password: </label>
+									<label htmlFor="confirmPassword">Confirm Password: </label>
 									<input
+									id="confirmPassword"
+									data-testid="confirmPassword"
 									type="password"
 									name="confirmPassword"
 									value={formData.confirmPassword}

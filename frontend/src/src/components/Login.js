@@ -14,6 +14,11 @@ const Login = () => {
 		const handleSubmit = async (e) => {
 				e.preventDefault();
 
+				if (!/\S+@\S+\.\S+/.test(formData.email)) {
+					setErrorMessage('Invalid email address.');
+					return;
+				}
+				
 				try {
 						const response = await axiosInstance.post('/api/login',{
 								email: formData.email,
@@ -37,9 +42,10 @@ const Login = () => {
 						<h1>Login</h1>
 						<form onSubmit={handleSubmit}>
 								<div>
-										<label>Email: </label>
+										<label htmlFor="email">Email: </label>
 										<input
 											type="email"
+											id="email"
 											name="email"
 											value={formData.email}
 											onChange={handleChange}
@@ -47,9 +53,10 @@ const Login = () => {
 										/>
 								</div>
 								<div>
-										<label>Password: </label>
+										<label htmlFor="password">Password: </label>
 										<input
 											type="password"
+											id="password"
 											name="password"
 											value={formData.password}
 											onChange={handleChange}
