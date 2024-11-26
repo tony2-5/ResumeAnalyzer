@@ -46,6 +46,10 @@ const ResumeDescriptionUpload = ({setData}) => {
             setMessage('Please enter a job description.');
             return;
         }
+        if (jobDescription.length>5000) {
+            setMessage('Description must be less than 5000 characters.');
+            return;
+        }
 
         try {
             await axiosInstance.post('/api/job-description',

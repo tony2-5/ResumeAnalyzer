@@ -61,3 +61,7 @@ Our project aims to allow users to upload their resume and receive feedback and 
 ### Running Frontend Tests (After project initialization)
 1. From the main directory go to the frontend/src folder with `cd ./frontend/src`
 2. Run `npm test`
+
+### Running Backend Tests (After project initialization)
+1. From the main directory go to the tests folder `cd ./tests`
+2. Run `pytest`
