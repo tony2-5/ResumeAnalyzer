@@ -104,4 +104,53 @@ describe('Dashboard', () => {
 			expect(screen.getByText(/Failed to upload resume./i)).toBeInTheDocument();
 		});
 	});
+
+	test('handles error when uploading a file larger than 2MB', async () => {
+    	// Create a file that exceeds 2MB in size
+		const largeFileContent = new Array(2097152).join('A');
+		const largeFile = new File([largeFileContent], 'largeResume.pdf', { type: 'application/pdf' });
+
+		axiosInstance.post.mockRejectedValueOnce({
+			response: { data: { detail: 'File size exceeds 2MB limit.' } },
+		});
+
+		render(
+			<MemoryRouter>
+				<Dashboard />
+			</MemoryRouter>
+		);
+
+		// Set file for resume
+		const fileInput = screen.getByTestId(/resume/i);
+		fireEvent.change(fileInput, { target: { files: [largeFile] } });
+
+		fireEvent.click(screen.getByRole('button', { name: /Upload Resume/i }));
+
+		await waitFor(() => {
+			expect(screen.getByText(/File size exceeds 2MB limit./i)).toBeInTheDocument();
+		});
+ 	 });
+
+	test('handles error when uploading a job description longer than 5000 characters', async () => {
+		const longJobDescription = 'A'.repeat(5001);
+
+		axiosInstance.post.mockRejectedValueOnce({
+			response: { data: { detail: 'Job description must be less than 5000 characters.' } },
+		});
+
+		render(
+			<MemoryRouter>
+				<Dashboard />
+			</MemoryRouter>
+		);
+
+		const textarea = screen.getByTestId(/description/i);
+		fireEvent.change(textarea, { target: { value: longJobDescription } });
+
+		fireEvent.click(screen.getByRole('button', { name: /Upload Job Description/i }));
+
+		await waitFor(() => {
+			expect(screen.getByText(/Description must be less than 5000 characters./i)).toBeInTheDocument();
+		});
+	});
 });
