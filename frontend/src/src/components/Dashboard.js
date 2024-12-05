@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "../dashboard.css";
-import { mockData } from "../mock_data";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from '../api/axios';
 import ResumeDescriptionUpload from "./ResumeDescriptionUpload";
+import jsPDF from 'jspdf';
 
 const Dashboard = () => {
     const [fitScore, setFitScore] = useState(null);
-    const [skillsMatched, setSkillsMatched] = useState([]);
-    const [improvementSuggestions, setImprovementSuggestions] = useState([]);
+    const [matchedKeywords, setMatchedKeywords] = useState([]);
+    const [feedback, setFeedback] = useState([]);
     const [data, setDataFromChild] = useState(null);
+    const [filter, setFilter] = useState("all");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -18,37 +19,55 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axiosInstance.get('/api/users/me');
+                await axiosInstance.get('/api/users/me');
             } catch (error) {
-                // Redirect to login page on error
-                navigate('/login');
+                navigate('/login'); // Redirect to login page on error
             }
         };
         fetchUserData();
     }, [navigate]);
 
-    // Mock API request
+    // Fetch Fit Score Data
     useEffect(() => {
         if (data) {
             setLoading(true);
-            // Use an async function within the useEffect
-            const fetchData = async () => {
+            const fetchFitScoreData = async () => {
                 try {
-                    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate delay
-                    setFitScore(mockData.fitScore);
-                    setSkillsMatched(mockData.skillsMatched);
-                    setImprovementSuggestions(mockData.improvementSuggestions);
-                    // data from form submission
-                    console.log(data);
+                    const response = await axiosInstance.post('/api/fit-score', { resumeData: data });
+                    const { fit_score, matched_keywords, feedback } = response.data;
+                    setFitScore(fit_score);
+                    setMatchedKeywords(matched_keywords);
+                    setFeedback(feedback);
                 } catch (err) {
-                    setError("Failed to fetch data. Please try again.");
+                    setError("Failed to fetch fit score data. Please try again.");
                 } finally {
                     setLoading(false);
                 }
             };
-            fetchData()
+            fetchFitScoreData();
         }
     }, [data]);
+
+    // Generate PDF Report
+    const generatePDF = () => {
+        const doc = new jsPDF();
+        doc.text("Resume Analysis Report", 10, 10);
+        doc.text(`Fit Score: ${fitScore}%`, 10, 20);
+        doc.text("Matched Keywords:", 10, 30);
+        matchedKeywords.forEach((keyword, index) => {
+            doc.text(`- ${keyword}`, 10, 40 + index * 10);
+        });
+        doc.text("Feedback:", 10, 60);
+        feedback.forEach((item, index) => {
+            doc.text(`- ${item.text}`, 10, 70 + index * 10);
+        });
+        doc.save("Resume_Analysis_Report.pdf");
+    };
+
+    // Filter Feedback
+    const filteredFeedback = feedback.filter((item) =>
+        filter === "all" ? true : item.category === filter
+    );
 
     if (loading) {
         return (
@@ -65,48 +84,59 @@ const Dashboard = () => {
 
     return (
         <>
-            <button onClick={()=>{
-                localStorage.clear(); 
-                window.location.reload()}}>
-                    Sign Out
+            <button onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+            }}>
+                Sign Out
             </button>
             <ResumeDescriptionUpload setData={setDataFromChild}></ResumeDescriptionUpload>
             <div className="dashboard">
                 <h1>Resume Analysis Results</h1>
 
-                {/* Fit Score */}
+                {/* Fit Score Section */}
                 <div className="section">
                     <h2>Resume Fit Score</h2>
                     <div className="fit-score">
                         <div className="progress-bar">
                             <div
-                            className="progress"
-                            style={{ width: `${fitScore}%` }}
-                            >
-                            </div>
+                                className="progress"
+                                style={{ width: `${fitScore}%` }}
+                            ></div>
                         </div>
                         <p>{fitScore}% Match</p>
                     </div>
                 </div>
 
-                {/* Skills and Keywords Matched */}
+                {/* Matched Skills Section */}
                 <div className="section">
                     <h2>Skills and Keywords Matched</h2>
                     <ul>
-                    {skillsMatched.map((skill, index) => (
-                        <li key={index}>{skill}</li>
-                    ))}
+                        {matchedKeywords.map((skill, index) => (
+                            <li key={index}>{skill}</li>
+                        ))}
                     </ul>
                 </div>
 
-                {/* Improvement Suggestions */}
+                {/* Improvement Suggestions Section */}
                 <div className="section">
                     <h2>Improvement Suggestions</h2>
+                    <select onChange={(e) => setFilter(e.target.value)}>
+                        <option value="all">All</option>
+                        <option value="skills">Skills</option>
+                        <option value="experience">Experience</option>
+                        <option value="formatting">Formatting</option>
+                    </select>
                     <ul>
-                    {improvementSuggestions.map((suggestion, index) => (
-                        <li key={index}>{suggestion}</li>
-                    ))}
+                        {filteredFeedback.map((suggestion, index) => (
+                            <li key={index}>{suggestion.text}</li>
+                        ))}
                     </ul>
+                </div>
+
+                {/* Download PDF Button */}
+                <div className="section">
+                    <button onClick={generatePDF}>Download PDF Report</button>
                 </div>
             </div>
         </>
