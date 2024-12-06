@@ -31,36 +31,27 @@ const Dashboard = () => {
         if (data) {
             setLoading(true);
             // Call the backend API to trigger the analysis
-            const analyzeResume = async () => {
-                try {
-                    const accessToken = localStorage.getItem('accessToken');
-                    const sessionToken = localStorage.getItem('session_token');  // Check if session-token exists
-            
-                    console.log("Access Token:", accessToken);  // Debug log
-                    console.log("Session Token:", sessionToken);  // Debug log
-            
-                    const response = await axiosInstance.post('/api/analyze', {}, {
-                        headers: { 
-                            'Authorization': `Bearer ${accessToken}`,
-                            'session-token': sessionToken || ''  // Send session-token if it exists
-                        }
-                    });
-            
-                    console.log("Response from backend:", response); // Log the full response
-            
-                    if (response.status === 200) {
-                        const resultData = response.data.data;  // Access analysis result from the response
-                        setFitScore(resultData.fitScore || 0);
-                        setSkillsMatched(resultData.skillsMatched || []);
-                        setImprovementSuggestions(resultData.improvementSuggestions || []);
-                    }
-                } catch (err) {
-                    console.log("Error analyzing resume:", err); // Log the error details
-                    setError("Failed to analyze data. Please try again.");
-                } finally {
-                    setLoading(false);
-                }
-            };
+// Assuming API response matches the mock data structure
+const analyzeResume = async () => {
+    try {
+        const response = await axiosInstance.post('/api/analyze', {
+            resume_text: data.resumeText,
+            job_description: data.jobDescription
+        });
+
+        if (response.status === 200) {
+            const resultData = response.data;
+            setFitScore(resultData.fitScore);
+            setSkillsMatched(resultData.skillsMatched || []);
+            setImprovementSuggestions(resultData.improvementSuggestions || []);
+        }
+    } catch (err) {
+        setError("Failed to analyze data. Please try again.");
+    } finally {
+        setLoading(false);
+    }
+};
+
 
             analyzeResume();
         }
