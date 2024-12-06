@@ -1,5 +1,3 @@
-# backend/routers/login.py
-
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
 from backend.models import users
