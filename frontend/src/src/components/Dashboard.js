@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "../dashboard.css";
-import { mockData } from "../mock_data";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from '../api/axios';
 import ResumeDescriptionUpload from "./ResumeDescriptionUpload";
@@ -18,35 +17,39 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await axiosInstance.get('/api/users/me');
+                await axiosInstance.get('/api/users/me');
             } catch (error) {
                 // Redirect to login page on error
+                localStorage.clear()
                 navigate('/login');
             }
         };
         fetchUserData();
     }, [navigate]);
 
-    // Mock API request
+    // Triggered when data is received from ResumeDescriptionUpload
     useEffect(() => {
         if (data) {
             setLoading(true);
-            // Use an async function within the useEffect
-            const fetchData = async () => {
+            // Call the backend API to trigger the analysis
+            // Assuming API response matches the mock data structure
+            const analyzeResume = async () => {
                 try {
-                    await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate delay
-                    setFitScore(mockData.fitScore);
-                    setSkillsMatched(mockData.skillsMatched);
-                    setImprovementSuggestions(mockData.improvementSuggestions);
-                    // data from form submission
-                    console.log(data);
+                    const response = await axiosInstance.post('/api/analyze')
+
+                    if (response.status === 200) {
+                        const resultData = response.data;
+                        setFitScore(resultData.fitScore);
+                        setSkillsMatched(resultData.skillsMatched || []);
+                        setImprovementSuggestions(resultData.improvementSuggestions || []);
+                    }
                 } catch (err) {
-                    setError("Failed to fetch data. Please try again.");
+                    setError("Failed to analyze data. Please try again.");
                 } finally {
                     setLoading(false);
                 }
             };
-            fetchData()
+            analyzeResume();
         }
     }, [data]);
 
@@ -65,10 +68,11 @@ const Dashboard = () => {
 
     return (
         <>
-            <button onClick={()=>{
-                localStorage.clear(); 
-                window.location.reload()}}>
-                    Sign Out
+            <button onClick={() => {
+                localStorage.clear();
+                window.location.reload();
+            }}>
+                Sign Out
             </button>
             <ResumeDescriptionUpload setData={setDataFromChild}></ResumeDescriptionUpload>
             <div className="dashboard">
@@ -79,11 +83,7 @@ const Dashboard = () => {
                     <h2>Resume Fit Score</h2>
                     <div className="fit-score">
                         <div className="progress-bar">
-                            <div
-                            className="progress"
-                            style={{ width: `${fitScore}%` }}
-                            >
-                            </div>
+                            <div className="progress" style={{ width: `${fitScore}%` }} />
                         </div>
                         <p>{fitScore}% Match</p>
                     </div>
@@ -93,9 +93,9 @@ const Dashboard = () => {
                 <div className="section">
                     <h2>Skills and Keywords Matched</h2>
                     <ul>
-                    {skillsMatched.map((skill, index) => (
-                        <li key={index}>{skill}</li>
-                    ))}
+                        {skillsMatched.map((skill, index) => (
+                            <li key={index}>{skill}</li>
+                        ))}
                     </ul>
                 </div>
 
@@ -103,9 +103,9 @@ const Dashboard = () => {
                 <div className="section">
                     <h2>Improvement Suggestions</h2>
                     <ul>
-                    {improvementSuggestions.map((suggestion, index) => (
-                        <li key={index}>{suggestion}</li>
-                    ))}
+                        {improvementSuggestions.map((suggestion, index) => (
+                            <li key={index}>{suggestion}</li>
+                        ))}
                     </ul>
                 </div>
             </div>

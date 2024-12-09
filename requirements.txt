@@ -8,3 +8,5 @@ pyjwt
 python-dotenv
 pytest
 pypdf
+requests
+huggingface_hub
