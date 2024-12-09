@@ -27,3 +27,7 @@ class AnalyzeResponse(BaseModel):
     """
     fitScore: int = Field(..., ge=0, le=100)
     improvementSuggestions: List[str]
+
+class FitScorePayload(BaseModel):
+    resumeText: str = Field(..., max_length=10000, description="The text of the resume")
+    jobDescription: str = Field(..., max_length=10000, description="The job description text")
