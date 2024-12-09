@@ -1,8 +1,8 @@
 import pytest
-from backend.generate_feedback import generate_feedback  # Replace 'your_module_name' with your actual module name
+from backend.generate_feedback import generateFeedback
 
 @pytest.mark.parametrize(
-    "resume, job_description, required, preferred, feedback",
+    "resume, jobDescription, required, preferred, feedback",
     [
         # Full match
         (
@@ -10,7 +10,7 @@ from backend.generate_feedback import generate_feedback  # Replace 'your_module_
             "Looking for a software engineer with experience in Python, AWS, and REST APIs.",
             ["python", "aws"],
             ["rest", "apis"],
-            {"missing_keywords": [],
+            {"missingKeywords": [],
              "suggestions": []},
         ),
         # Partial match
@@ -19,7 +19,7 @@ from backend.generate_feedback import generate_feedback  # Replace 'your_module_
             "Looking for a software engineer with experience in Python, AWS, and REST APIs.",
             ["python", "aws"],
             ["rest", "apis"],
-            {"missing_keywords": ["apis", "rest"],
+            {"missingKeywords": ["apis", "rest"],
              "suggestions": [
                  "Consider including 'apis' in your resume to align with the job description.",
                  "Consider including 'rest' in your resume to align with the job description."
@@ -31,7 +31,7 @@ from backend.generate_feedback import generate_feedback  # Replace 'your_module_
             "Looking for a software engineer with experience in Python, AWS, and REST APIs.",
             ["python", "aws"],
             ["rest", "apis"],
-            {"missing_keywords": ["apis", "aws", "python", "rest"],
+            {"missingKeywords": ["apis", "aws", "python", "rest"],
              "suggestions": [
                  "Consider including 'apis' in your resume to align with the job description.",
                  "Consider including 'aws' in your resume to align with the job description.",
@@ -45,7 +45,7 @@ from backend.generate_feedback import generate_feedback  # Replace 'your_module_
             "Looking for a software engineer with experience in Python, AWS, and REST APIs.",
             ["python", "aws"],
             ["rest", "apis"],
-            {"missing_keywords": [],
+            {"missingKeywords": [],
              "suggestions": []},
         ),
         # Non-alphanumeric characters in the resume and job description
@@ -54,7 +54,7 @@ from backend.generate_feedback import generate_feedback  # Replace 'your_module_
             "Looking for a software engineer with Python, AWS, REST APIs, 5+ years experience.",
             None,
             None,
-            {"missing_keywords": ["5", "apis"],
+            {"missingKeywords": ["5", "apis"],
              "suggestions": [
                  "Highlight achievements or experience related to 5 years.",
                  "Consider including 'apis' in your resume to align with the job description."
@@ -66,7 +66,7 @@ from backend.generate_feedback import generate_feedback  # Replace 'your_module_
             "Looking for a software engineer with C++, AWS, REST APIs.",
             None,
             None,
-            {"missing_keywords": ["apis", "aws", "c++"],
+            {"missingKeywords": ["apis", "aws", "c++"],
              "suggestions": [
                  "Consider including 'apis' in your resume to align with the job description.",
                  "Consider including 'aws' in your resume to align with the job description.",
@@ -75,5 +75,5 @@ from backend.generate_feedback import generate_feedback  # Replace 'your_module_
         ),
     ],
 )
-def test_generate_feedback(resume, job_description, required, preferred, feedback):
-    assert generate_feedback(resume, job_description, required, preferred) == feedback
+def testGenerateFeedback(resume, jobDescription, required, preferred, feedback):
+    assert generateFeedback(resume, jobDescription, required, preferred) == feedback

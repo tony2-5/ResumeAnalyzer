@@ -1,7 +1,7 @@
 import re
 from collections import Counter
 
-def calculate_fit_score(resume_text, job_description, required=None, preferred=None):
+def calculateFitScore(resumeText, jobDescription, required=None, preferred=None):
     """
     Calculate a fit score based on keyword matches between a resume and a job description.
 
@@ -15,44 +15,44 @@ def calculate_fit_score(resume_text, job_description, required=None, preferred=N
         """Tokenize and normalize the text."""
         return re.findall(r'\b\w+\b', text.lower())
     
-    if not resume_text or not job_description:
+    if not resumeText or not jobDescription:
         return 0
 
-    resume_tokens = tokenize(resume_text)
-    job_tokens = tokenize(job_description)
+    resumeTokens = tokenize(resumeText)
+    jobTokens = tokenize(jobDescription)
 
     # Count matches for required and preferred keywords
-    resume_counter = Counter(resume_tokens)
+    resumeCounter = Counter(resumeTokens)
 
     # If required and preferred are None, default to empty lists
     required = required or []
     preferred = preferred or []
 
-    required_matches = sum(resume_counter[k] for k in required)
-    preferred_matches = sum(resume_counter[k] for k in preferred)
+    requiredMatches = sum(resumeCounter[k] for k in required)
+    preferredMatches = sum(resumeCounter[k] for k in preferred)
 
-    total_required = len(required)
-    total_preferred = len(preferred)
+    totalRequired = len(required)
+    totalPreferred = len(preferred)
 
     score = 0
 
     # If there are required keywords, give them 70% of the score
-    if total_required > 0:
-        score += (required_matches / total_required) * 70
+    if totalRequired > 0:
+        score += (requiredMatches / totalRequired) * 70
 
     # If there are preferred keywords, give them 30% of the score
-    if total_preferred > 0:
-        score += (preferred_matches / total_preferred) * 30
+    if totalPreferred > 0:
+        score += (preferredMatches / totalPreferred) * 30
 
     # For non-weighted keyword matches, calculate proportional score
     if not required and not preferred:
         # Count the total number of unique matching tokens
-        total_job_tokens = len(set(job_tokens))
-        matching_tokens = len(set(resume_tokens) & set(job_tokens))
+        totalJobTokens = len(set(jobTokens))
+        matchingTokens = len(set(resumeTokens) & set(jobTokens))
         
         # Proportional score based on matching tokens
-        if total_job_tokens > 0:
-            score = (matching_tokens / total_job_tokens) * 100
+        if totalJobTokens > 0:
+            score = (matchingTokens / totalJobTokens) * 100
         else:
             score = 0
 

@@ -1,8 +1,8 @@
 import pytest
-from backend.calculate_fit_score import calculate_fit_score  # Replace 'your_module_name' with your actual module name
+from backend.calculate_fit_score import calculateFitScore 
 
 @pytest.mark.parametrize(
-    "resume, job_description, required, preferred, expected_score",
+    "resume, jobDescription, required, preferred, expectedScore",
     [
         # Full match
         (
@@ -54,5 +54,5 @@ from backend.calculate_fit_score import calculate_fit_score  # Replace 'your_mod
         ),
     ],
 )
-def test_calculate_fit_score(resume, job_description, required, preferred, expected_score):
-    assert calculate_fit_score(resume, job_description, required, preferred) == expected_score
+def testCalculateFitScore(resume, jobDescription, required, preferred, expectedScore):
+    assert calculateFitScore(resume, jobDescription, required, preferred) == expectedScore
