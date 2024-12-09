@@ -85,10 +85,7 @@ async def analyzeResumeAndJobDescription(authorization: str = Header(...)):
     if not isinstance(resumeText, str) or not isinstance(jobDescription, str):
         raise HTTPException(status_code=400, detail="Both resume_text and job_description must be strings.")
     if len(resumeText) > 10000 or len(jobDescription) > 10000:
-        raise HTTPException(
-            status_code=400,
-            detail="Inputs exceed the maximum character limit of 10,000 characters each."
-        )
+        raise HTTPException(status_code=400,detail="Inputs exceed the maximum character limit of 10,000 characters each.")
 
     try:
         # Call Hugging Face API and process the response
