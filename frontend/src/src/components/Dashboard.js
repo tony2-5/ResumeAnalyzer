@@ -20,6 +20,7 @@ const Dashboard = () => {
                 await axiosInstance.get('/api/users/me');
             } catch (error) {
                 // Redirect to login page on error
+                localStorage.clear()
                 navigate('/login');
             }
         };
@@ -31,28 +32,23 @@ const Dashboard = () => {
         if (data) {
             setLoading(true);
             // Call the backend API to trigger the analysis
-// Assuming API response matches the mock data structure
-const analyzeResume = async () => {
-    try {
-        const response = await axiosInstance.post('/api/analyze', {
-            resume_text: data.resumeText,
-            job_description: data.jobDescription
-        });
+            // Assuming API response matches the mock data structure
+            const analyzeResume = async () => {
+                try {
+                    const response = await axiosInstance.post('/api/analyze')
 
-        if (response.status === 200) {
-            const resultData = response.data;
-            setFitScore(resultData.fitScore);
-            setSkillsMatched(resultData.skillsMatched || []);
-            setImprovementSuggestions(resultData.improvementSuggestions || []);
-        }
-    } catch (err) {
-        setError("Failed to analyze data. Please try again.");
-    } finally {
-        setLoading(false);
-    }
-};
-
-
+                    if (response.status === 200) {
+                        const resultData = response.data;
+                        setFitScore(resultData.fitScore);
+                        setSkillsMatched(resultData.skillsMatched || []);
+                        setImprovementSuggestions(resultData.improvementSuggestions || []);
+                    }
+                } catch (err) {
+                    setError("Failed to analyze data. Please try again.");
+                } finally {
+                    setLoading(false);
+                }
+            };
             analyzeResume();
         }
     }, [data]);

@@ -9,16 +9,10 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     (config) => {
         const accessToken = localStorage.getItem('accessToken');
-        const sessionToken = localStorage.getItem('sessionToken'); // Assume sessionToken is stored in localStorage
 
         if (accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`;
         }
-
-        if (sessionToken) {
-            config.headers['session-token'] = sessionToken;
-        }
-
         return config;
     },
     (error) => Promise.reject(error)
