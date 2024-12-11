@@ -1,4 +1,42 @@
 import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import make_pipeline
+
+def categorizeSuggestions(suggestions):
+    # Sample labeled data for training
+    trainingData = [
+        ("Add programming languages like Python and Java.", "skills"),
+        ("Include soft skills like communication and teamwork.", "skills"),
+        ("List skills in categories, such as technical and interpersonal.", "skills"),
+        ("Mention relevant coursework in the education section.", "education"),
+        ("Mention GPA in the education section.", "education"),
+        ("Include online courses or certifications.", "education"),
+        ("Describe work experience.", "experience"),
+        ("List relevant projects with specific details.", "experience"),
+        ("Use action verbs to describe job responsibilities.", "experience"),
+        ("Highlight awards or certifications.", "achievements"),
+        ("Quantify achievements with specific metrics.", "achievements"),
+        ("Include notable accomplishments or recognitions.", "achievements")
+    ]
+
+    # Split training data into texts and labels
+    texts, labels = zip(*trainingData)
+
+    # Create and train a pipeline
+    model = make_pipeline(TfidfVectorizer(), MultinomialNB())
+    model.fit(texts, labels)
+
+    # Predict categories for new suggestions
+    predictions = model.predict(suggestions)
+
+    # Format feedback as a list of dictionaries
+    suggestions = [
+        {"category": category, "text": suggestion}
+        for suggestion, category in zip(suggestions, predictions)
+    ]
+
+    return {"suggestions": suggestions}
 
 def getStopWords():
     # found list of stopwords at https://github.com/Alir3z4/stop-words?tab=readme-ov-file
@@ -46,21 +84,24 @@ def extractSkillsFromJobDesc(jobDescription):
         "preferred": tokenize(preferredText)-getStopWords()
     }
 
-def generateFeedback(resumeText, jobDescription):
+def generateFeedback(resumeText, jobDescription, nlpResponse):
+    # Feedback is generated using both NLP input and own algorithm
     if not resumeText or not jobDescription:
         return {"missing_keywords": [], "suggestions": []}
 
+    print(categorizeSuggestions(nlpResponse["suggestions"]))
     # Tokenize resume and job description
     resumeTokens = tokenize(resumeText)
     jobTokens = tokenize(jobDescription)
 
+    tokenizedRequiredNLP = tokenize(" ".join(nlpResponse['qualifications']['job_description']['required']))
+    tokenizedPreferredNLP = tokenize(" ".join(nlpResponse['qualifications']['job_description']['preferred']))
     categorizedJobTokens=extractSkillsFromJobDesc(jobDescription)
-    requiredTokens = categorizedJobTokens['required']
-    preferredTokens = categorizedJobTokens['preferred']
-    print(resumeTokens)
+    requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens['required'])
+    preferredTokens =  set(tokenizedPreferredNLP & categorizedJobTokens['preferred'])
 
     # If no required or preferred, default to job description tokens
-    if not required and not preferred:
+    if not requiredTokens and not preferredTokens:
         requiredTokens = jobTokens
 
     # Identify missing keywords
@@ -69,7 +110,11 @@ def generateFeedback(resumeText, jobDescription):
     missingKeywords.sort()
     # Generate suggestions
     suggestions = []
+    nlpSuggestionString = " ".join(nlpResponse["suggestions"]).lower()
     for keyword in missingKeywords:
+        # prevent duplicate suggestions when combining nlp and dynamically generated
+        if keyword in nlpSuggestionString:
+            continue
         if keyword.isdigit():
             suggestions.append(f"Highlight achievements or experience related to {keyword} years.")
         elif keyword.isalpha():
@@ -77,4 +122,4 @@ def generateFeedback(resumeText, jobDescription):
         else:
             suggestions.append(f"Add details that demonstrate your expertise in '{keyword}'.")
 
-    return {"missingKeywords": missingKeywords, "suggestions": suggestions}
+    return {"missingKeywords": missingKeywords, "feedback": categorizeSuggestions(suggestions+nlpResponse["suggestions"])}
