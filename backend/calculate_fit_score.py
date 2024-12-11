@@ -1,8 +1,8 @@
 import re
 from collections import Counter
-from backend.generate_feedback import getStopWords
+from backend.generate_feedback import getStopWords, tokenize, extractSkillsFromJobDesc 
 
-def calculateFitScore(resumeText, jobDescription, required=None, preferred=None):
+def calculateFitScore(resumeText, jobDescription):
     """
     Calculate a fit score based on keyword matches between a resume and a job description.
 
@@ -12,9 +12,6 @@ def calculateFitScore(resumeText, jobDescription, required=None, preferred=None)
     :param preferred_keywords: List of preferred keywords (optional).
     :return: Fit score as a percentage (0–100).
     """
-    def tokenize(text):
-        """Tokenize and normalize the text."""
-        return set(re.findall(r'[\w#/-]+(?:\+{2})?', text.lower()))
     
     if not resumeText or not jobDescription:
         return 0
@@ -23,18 +20,20 @@ def calculateFitScore(resumeText, jobDescription, required=None, preferred=None)
 
     resumeTokens = tokenize(resumeText)-stopWords
     jobTokens = tokenize(jobDescription)-stopWords
+
+    # Convert required and preferred to sets for comparison
+    categorizedJobTokens=extractSkillsFromJobDesc(jobDescription)
+    requiredTokens = categorizedJobTokens['required'] or []
+    preferredTokens = categorizedJobTokens['preferred'] or []
+
     # Count matches for required and preferred keywords
     resumeCounter = Counter(resumeTokens)
 
-    # If required and preferred are None, default to empty lists
-    required = required or []
-    preferred = preferred or []
+    requiredMatches = sum(resumeCounter[k] for k in requiredTokens)
+    preferredMatches = sum(resumeCounter[k] for k in preferredTokens)
 
-    requiredMatches = sum(resumeCounter[k] for k in required)
-    preferredMatches = sum(resumeCounter[k] for k in preferred)
-
-    totalRequired = len(required)
-    totalPreferred = len(preferred)
+    totalRequired = len(requiredTokens)
+    totalPreferred = len(preferredTokens)
 
     score = 0
 
@@ -47,7 +46,7 @@ def calculateFitScore(resumeText, jobDescription, required=None, preferred=None)
         score += (preferredMatches / totalPreferred) * 30
 
     # For non-weighted keyword matches, calculate proportional score
-    if not required and not preferred:
+    if not requiredTokens and not preferredTokens:
         # Count the total number of unique matching tokens
         totalJobTokens = len(set(jobTokens))
         matchingTokens = len(set(resumeTokens) & set(jobTokens))

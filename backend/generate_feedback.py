@@ -8,7 +8,8 @@ def getStopWords():
     return set(content)
 
 def tokenize(text):
-    return set(re.findall(r'[\w#/-]+(?:\+{2})?', text.lower()))
+    return set(re.findall(r'[\w#+]+', text.lower()))
+    
 
 def extractSkillsFromJobDesc(jobDescription):
     """
@@ -16,36 +17,36 @@ def extractSkillsFromJobDesc(jobDescription):
     Handles both structured and unstructured job descriptions.
     """
     # Use regex to identify potential section headers
-    sections = re.split(r"(?i)^\s*(Responsibilities|Requirements|Core Skills|Preferred|Bonus|Qualifications|Key Skills)\b:?", jobDescription, flags=re.MULTILINE)
+    sections = re.split(
+    r"(?i)^\s*(responsibilities|requirements|required|core\s+skills|preferred|bonus|qualifications|key\s+skills|education|experience)\s*:?",jobDescription,flags=re.MULTILINE)
     # Initialize containers for skills
     sectionMap = {
-        "Responsibilities": "",
-        "Requirements": "",
-        "Core Skills": "",
-        "Preferred": "",
-        "Bonus": "",
-        "Qualifications": "",
-        "Key Skills": ""
+        "responsibilities": "",
+        "requirements": "",
+        "required": "",
+        "core skills": "",
+        "preferred": "",
+        "bonus": "",
+        "qualifications": "",
+        "key skills": "",
+        "experience": "",
+        "education": "",
     }
-
     # Extract sections
     for i in range(0, len(sections)-1):
-        sectionName = sections[i].strip().capitalize()
+        sectionName = sections[i].strip().lower()
         if sectionName in sectionMap:
             sectionMap[sectionName] += " "+sections[i + 1].replace('\n'," ").strip()
-
     # Combine relevant sections into required and preferred skills
-    requiredText = " ".join([sectionMap[key] for key in ["Requirements", "Core Skills", "Qualifications", "Key Skills"]])
-    preferredText = " ".join([sectionMap[key] for key in ["Preferred", "Bonus"]])
+    requiredText = " ".join([sectionMap[key] for key in ["requirements", "required", "core skills", "qualifications", "key skills", "education", "experience"]])
+    preferredText = " ".join([sectionMap[key] for key in ["preferred", "bonus"]])
 
-    print(requiredText)
     return {
         "required": tokenize(requiredText)-getStopWords(),
         "preferred": tokenize(preferredText)-getStopWords()
     }
 
-def generateFeedback(resumeText, jobDescription, required=None, preferred=None):
-    print(extractSkillsFromJobDesc(jobDescription))
+def generateFeedback(resumeText, jobDescription):
     if not resumeText or not jobDescription:
         return {"missing_keywords": [], "suggestions": []}
 
@@ -53,9 +54,10 @@ def generateFeedback(resumeText, jobDescription, required=None, preferred=None):
     resumeTokens = tokenize(resumeText)
     jobTokens = tokenize(jobDescription)
 
-    # Convert required and preferred to sets for comparison
-    requiredTokens = set(required or [])
-    preferredTokens = set(preferred or [])
+    categorizedJobTokens=extractSkillsFromJobDesc(jobDescription)
+    requiredTokens = categorizedJobTokens['required']
+    preferredTokens = categorizedJobTokens['preferred']
+    print(resumeTokens)
 
     # If no required or preferred, default to job description tokens
     if not required and not preferred:
