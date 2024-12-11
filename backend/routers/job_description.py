@@ -15,8 +15,7 @@ async def uploadJobDescription(request: JobDescriptionInput, session_token: str 
     # Check if resume is uploaded first
     if session_token not in temp_storage or "resume_text" not in temp_storage[session_token]:
         raise HTTPException(status_code=400, detail="Upload resume first.")
-
     # Store the job description
-    temp_storage[session_token]["job_description"] = request.job_description
+    temp_storage[session_token]["job_description"] = request.job_description.replace("\n", " ").strip()
 
     return {"job_description": request.job_description, "token": session_token}

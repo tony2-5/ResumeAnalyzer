@@ -74,7 +74,7 @@ const handleJobDescriptionSubmit = async () => {
 
         console.log("Resume data retrieved:", response.data); // Log the response from the backend
         setData({
-            resumeText: response.data.resume_text, // Assuming resume_text comes from the response
+            resumeText: response.data.data.resume_text, // Assuming resume_text comes from the response
             jobDescription: jobDescription, // This is already available
         });
     } catch (error) {

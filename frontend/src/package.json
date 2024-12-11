@@ -1,9 +1,8 @@
 {
   "dependencies": {
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.0.1",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
+    "jspdf": "^2.5.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
@@ -36,7 +35,13 @@
   },
   "jest": {
     "transformIgnorePatterns": [
-      "/node_modules/(?!axios)/" 
+      "/node_modules/(?!axios)/"
     ]
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.0.1",
+    "jest": "^27.5.1",
+    "jsdom": "^25.0.1"
   }
 }
