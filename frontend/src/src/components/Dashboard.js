@@ -21,7 +21,9 @@ const Dashboard = () => {
             try {
                 await axiosInstance.get('/api/users/me');
             } catch (error) {
-                navigate('/login'); // Redirect to login page on error
+                // Redirect to login page on error
+                localStorage.clear()
+                navigate('/login');
             }
         };
         fetchUserData();
@@ -29,14 +31,14 @@ const Dashboard = () => {
 
     // Fetch Fit Score Data
     useEffect(() => {
-        if (data) {
+        if (data && data.resumeText!=null && data.jobDescription!=null) {
+            console.log(data)
             setLoading(true);
             const fetchFitScoreData = async () => {
                 try {
-                    const response = await axiosInstance.post('/api/fit-score', { resumeData: data });
-                    const { fit_score, matched_keywords, feedback } = response.data;
-                    setFitScore(fit_score);
-                    setMatchedKeywords(matched_keywords);
+                    const response = await axiosInstance.post('/api/fit-score', { resumeText: data.resumeText, jobDescription: data.jobDescription });
+                    const { fitScore, feedback } = response.data;
+                    setFitScore(fitScore);
                     setFeedback(feedback);
                 } catch (err) {
                     setError("Failed to fetch fit score data. Please try again.");
@@ -53,10 +55,10 @@ const Dashboard = () => {
         const doc = new jsPDF();
         doc.text("Resume Analysis Report", 10, 10);
         doc.text(`Fit Score: ${fitScore}%`, 10, 20);
-        doc.text("Matched Keywords:", 10, 30);
-        matchedKeywords.forEach((keyword, index) => {
-            doc.text(`- ${keyword}`, 10, 40 + index * 10);
-        });
+        // doc.text("Matched Keywords:", 10, 30);
+        // matchedKeywords.forEach((keyword, index) => {
+        //     doc.text(`- ${keyword}`, 10, 40 + index * 10);
+        // });
         doc.text("Feedback:", 10, 60);
         feedback.forEach((item, index) => {
             doc.text(`- ${item.text}`, 10, 70 + index * 10);
@@ -109,14 +111,14 @@ const Dashboard = () => {
                 </div>
 
                 {/* Matched Skills Section */}
-                <div className="section">
+                {/* <div className="section">
                     <h2>Skills and Keywords Matched</h2>
                     <ul>
                         {matchedKeywords.map((skill, index) => (
                             <li key={index}>{skill}</li>
                         ))}
                     </ul>
-                </div>
+                </div> */}
 
                 {/* Improvement Suggestions Section */}
                 <div className="section">

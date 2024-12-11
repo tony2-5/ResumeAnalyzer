@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axiosInstance from '../api/axios'; // Import the custom Axios instance
 
-const ResumeDescriptionUpload = ({setData}) => {
+const ResumeDescriptionUpload = ({ setData }) => {
     const [resumeFile, setResumeFile] = useState(null);
     const [jobDescription, setJobDescription] = useState('');
     const [message, setMessage] = useState('');
@@ -40,42 +40,48 @@ const ResumeDescriptionUpload = ({setData}) => {
         }
     };
 
-    // Handle job description upload
-    const handleJobDescriptionSubmit = async () => {
-        if (!jobDescription) {
-            setMessage('Please enter a job description.');
-            return;
-        }
-        if (jobDescription.length>5000) {
-            setMessage('Description must be less than 5000 characters.');
-            return;
-        }
+// Handle job description upload
+const handleJobDescriptionSubmit = async () => {
+    if (!jobDescription) {
+        setMessage('Please enter a job description.');
+        return;
+    }
+    if (jobDescription.length > 10000) {
+        setMessage('Job description exceeds the maximum length of 10,000 characters.');
+        return;
+    }
 
-        try {
-            await axiosInstance.post('/api/job-description',
-                {job_description: jobDescription},
-                {
-                headers: { 
-                    'session-token': localStorage.getItem('accessToken') 
-                }
-            });
+    try {
+        console.log("Sending job description:", jobDescription); // Log data being sent
+        await axiosInstance.post('/api/job-description', {
+            job_description: jobDescription
+        }, {
+            headers: { 
+                'session-token': localStorage.getItem('accessToken') 
+            }
+        });
 
-            setMessage('Job description uploaded successfully.');
-        } catch (error) {
-            setMessage(error.response?.data?.detail || 'Failed to upload job description.');
-        }
+        setMessage('Job description uploaded successfully.');
+    } catch (error) {
+        console.error('Error uploading job description:', error.response?.data); // Log the error response
+        setMessage(error.response?.data?.detail || 'Failed to upload job description.');
+    }
 
-        try {
-            const response = await axiosInstance.get('/api/resume-data', {
-                headers: {
-                    'session-token': localStorage.getItem('accessToken')
-                }
-            });
-            setData(response.data)
-        } catch (error) {
-            console.error('Error fetching resume data:');
-        }
-    };
+    try {
+        const response = await axiosInstance.get('/api/resume-data', {
+            headers: { 'session-token': localStorage.getItem('accessToken') }
+        });
+
+        console.log("Resume data retrieved:", response.data); // Log the response from the backend
+        setData({
+            resumeText: response.data.data.resume_text, // Assuming resume_text comes from the response
+            jobDescription: jobDescription, // This is already available
+        });
+    } catch (error) {
+        console.error('Error fetching resume data:', error);
+    }
+};
+
 
     return (
         <div>
