@@ -9,7 +9,7 @@ async def uploadJobDescription(request: JobDescriptionInput, session_token: str 
     # Validate job description
     if not request.job_description:
         raise HTTPException(status_code=400, detail="Job description is required.")
-    if len(request.job_description) > 5000:
+    if len(request.job_description) > 10000:
         raise HTTPException(status_code=400, detail="Job description exceeds character limit.")
     
     # Check if resume is uploaded first

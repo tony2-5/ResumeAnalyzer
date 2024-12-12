@@ -49,7 +49,7 @@ def tokenize(text):
     return set(re.findall(r'[\w#+]+', text.lower()))
     
 
-def extractSkillsFromJobDesc(jobDescription):
+def extractReqSkillsFromJobDesc(jobDescription):
     """
     Extracts required and preferred skills from the job description dynamically.
     Handles both structured and unstructured job descriptions.
@@ -63,8 +63,6 @@ def extractSkillsFromJobDesc(jobDescription):
         "requirements": "",
         "required": "",
         "core skills": "",
-        "preferred": "",
-        "bonus": "",
         "qualifications": "",
         "key skills": "",
         "experience": "",
@@ -77,35 +75,30 @@ def extractSkillsFromJobDesc(jobDescription):
             sectionMap[sectionName] += " "+sections[i + 1].replace('\n'," ").strip()
     # Combine relevant sections into required and preferred skills
     requiredText = " ".join([sectionMap[key] for key in ["requirements", "required", "core skills", "qualifications", "key skills", "education", "experience"]])
-    preferredText = " ".join([sectionMap[key] for key in ["preferred", "bonus"]])
 
-    return {
-        "required": tokenize(requiredText)-getStopWords(),
-        "preferred": tokenize(preferredText)-getStopWords()
-    }
+    return tokenize(requiredText)-getStopWords()
 
 def generateFeedback(resumeText, jobDescription, nlpResponse):
     # Feedback is generated using both NLP input and own algorithm
     if not resumeText or not jobDescription:
         return {"missing_keywords": [], "suggestions": []}
 
-    print(categorizeSuggestions(nlpResponse["suggestions"]))
+    stopWords = getStopWords()
     # Tokenize resume and job description
     resumeTokens = tokenize(resumeText)
     jobTokens = tokenize(jobDescription)
 
-    tokenizedRequiredNLP = tokenize(" ".join(nlpResponse['qualifications']['job_description']['required']))
-    tokenizedPreferredNLP = tokenize(" ".join(nlpResponse['qualifications']['job_description']['preferred']))
-    categorizedJobTokens=extractSkillsFromJobDesc(jobDescription)
-    requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens['required'])
-    preferredTokens =  set(tokenizedPreferredNLP & categorizedJobTokens['preferred'])
+    tokenizedRequiredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['required']))
+    tokenizedPreferredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['preferred']))
+    categorizedJobTokens=extractReqSkillsFromJobDesc(jobDescription)
+    requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens)
+    preferredTokens =  set(tokenizedPreferredNLP & jobTokens)
 
     # If no required or preferred, default to job description tokens
     if not requiredTokens and not preferredTokens:
         requiredTokens = jobTokens
 
     # Identify missing keywords
-    stopWords = getStopWords()
     missingKeywords = list((requiredTokens | preferredTokens) - resumeTokens - stopWords)
     missingKeywords.sort()
     # Generate suggestions

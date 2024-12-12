@@ -19,14 +19,7 @@ class Token(BaseModel):
     tokenType: str
 
 class JobDescriptionInput(BaseModel):
-    job_description: str = Field(..., max_length=5000)
-
-class AnalyzeResponse(BaseModel):
-    """
-    Response structure for the /analyze endpoint.
-    """
-    fitScore: int = Field(..., ge=0, le=100)
-    improvementSuggestions: List[str]
+    job_description: str = Field(..., max_length=10000)
 
 class FitScorePayload(BaseModel):
     resumeText: str = Field(..., max_length=10000, description="The text of the resume")
