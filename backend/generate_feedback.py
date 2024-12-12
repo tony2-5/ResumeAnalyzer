@@ -31,13 +31,15 @@ def categorizeSuggestions(suggestions):
     model.fit(texts, labels)
 
     # Predict categories for new suggestions
-    predictions = model.predict(suggestions)
-
-    # Format feedback as a list of dictionaries
-    suggestions = [
-        {"category": category, "text": suggestion}
-        for suggestion, category in zip(suggestions, predictions)
-    ]
+    if suggestions:
+        predictions = model.predict(suggestions)
+        # Format feedback as a list of dictionaries
+        suggestions = [
+            {"category": category, "text": suggestion}
+            for suggestion, category in zip(suggestions, predictions)
+        ]
+    else:
+        suggestions = []
 
     return {"suggestions": suggestions}
 

@@ -30,4 +30,6 @@ async def calculateFitScoreApi(payload: FitScorePayload, session_token: str = He
     fitScore = calculateFitScore(resumeText, jobDescription, nlpResponse)
     feedback = generateFeedback(resumeText, jobDescription, nlpResponse)
 
+    print(f"fitscore\t {fitScore}")
+    print(f"feedback\t {feedback}")
     return {"fitScore": fitScore["fitScore"], "matchedKeywords": fitScore["matchedKeywords"], "missingKeywords": feedback["missingKeywords"], "feedback": feedback['feedback']}
