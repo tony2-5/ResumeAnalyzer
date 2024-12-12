@@ -1,7 +1,10 @@
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
+from pathlib import Path
 from sklearn.pipeline import make_pipeline
+
+stopwords_path = Path(__file__).parent / "stopwords.txt"
 
 def categorizeSuggestions(suggestions):
     # Sample labeled data for training
@@ -28,19 +31,21 @@ def categorizeSuggestions(suggestions):
     model.fit(texts, labels)
 
     # Predict categories for new suggestions
-    predictions = model.predict(suggestions)
-
-    # Format feedback as a list of dictionaries
-    suggestions = [
-        {"category": category, "text": suggestion}
-        for suggestion, category in zip(suggestions, predictions)
-    ]
+    if suggestions:
+        predictions = model.predict(suggestions)
+        # Format feedback as a list of dictionaries
+        suggestions = [
+            {"category": category, "text": suggestion}
+            for suggestion, category in zip(suggestions, predictions)
+        ]
+    else:
+        suggestions = []
 
     return {"suggestions": suggestions}
 
 def getStopWords():
     # found list of stopwords at https://github.com/Alir3z4/stop-words?tab=readme-ov-file
-    with open('stopwords.txt', 'r') as file:
+    with open(stopwords_path, 'r', encoding="utf-8") as file:
         content = file.read().splitlines()
 
     return set(content)

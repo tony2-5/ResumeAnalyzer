@@ -64,4 +64,6 @@ def calculateFitScore(resumeText, jobDescription, nlpResponse):
         else:
             score = 0
 
+    
+    print(f"score: {score}, nlpScore: {nlpResponse['fitScore']}")
     return {"fitScore": round((score+nlpResponse['fitScore'])/2),"matchedKeywords":matchingKeywords}
