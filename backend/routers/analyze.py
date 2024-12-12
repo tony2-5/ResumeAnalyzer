@@ -23,7 +23,7 @@ def analyzeText(resumeText: str, jobDescription: str):
     input = [
         {
             "role": "user",
-            "content": 'Your response must be in this exact example format and follow json standards in english: {"fitscore": 0-100, jobDescriptionSkills:{ preferred: [], required: []},"suggestions": []} for the given resume and based on the given job description. Suggestions should be about a sentence long each. Get all the job description skills and should be 1-2 words. No additional comments. Be on the lookout for bad job descriptions.  Resume: '+resumeText+', Job description: '+jobDescription
+            "content": 'Your response must be in this exact example format and follow json standards in english: {"fitscore": 0-100, jobDescriptionSkills: {preferred: [], required: []}, "suggestions": []} for the given resume and based on the given job description. Suggestions should be about a sentence long each. Get all the job description skills and should be 1-2 words. No additional comments. Be on the lookout for bad job descriptions.  Resume: '+resumeText+', Job description: '+jobDescription
         }
     ]
     response = client.chat.completions.create(
