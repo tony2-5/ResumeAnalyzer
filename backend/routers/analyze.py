@@ -2,14 +2,12 @@ import os
 import json
 from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException, Header
+from fastapi import APIRouter, HTTPException
 from backend.routers.task12_in_memory_storage import temp_storage
-from backend.schemas import AnalyzeResponse
 
 # Load Hugging Face API key
 load_dotenv()
 HUGGINGFACE_API_KEY = os.getenv('HUGGING_API_KEY')
-API_URL = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-72B-Instruct"
 
 router = APIRouter()
 
@@ -25,15 +23,15 @@ def analyzeText(resumeText: str, jobDescription: str):
     input = [
         {
             "role": "user",
-            "content": 'return a response in this example format with no json tags: {"fitscore": 0-100 ,"qualifications": {"resume": [],"job_description": {"preferred": [], "required": []} }, "suggestions": []} for the given resume and based on the given job description. Qualifications should be 1-2 words. Be on the lookout for bad job descriptions.  Resume: '+resumeText+', Job description: '+jobDescription
+            "content": 'Your response must be in this exact example format and follow json standards in english: {"fitscore": 0-100, jobDescriptionSkills:{ preferred: [], required: []},"suggestions": []} for the given resume and based on the given job description. Suggestions should be about a sentence long each. Get all the job description skills and should be 1-2 words. No additional comments. Be on the lookout for bad job descriptions.  Resume: '+resumeText+', Job description: '+jobDescription
         }
     ]
     response = client.chat.completions.create(
-        model="Qwen/Qwen2.5-72B-Instruct", 
+        model="meta-llama/Llama-3.3-70B-Instruct", 
         messages=input, 
-        max_tokens=500
+        max_tokens=800
     )
-    print(response.choices[0].message.content)
+    print(response.choices[0].message.content.strip("()"))
     try:
         return json.loads(response.choices[0].message.content)
     except json.JSONDecodeError:
@@ -54,34 +52,23 @@ def parseResponse(analysisResult: dict):
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid 'fitscore' formatting. Must be an integer.")
 
-    # Validate and extract "qualifications"
-    qualifications = analysisResult.get("qualifications")
-    if not isinstance(qualifications, dict):
-        raise HTTPException(status_code=400, detail="Missing or invalid 'qualifications' in API response.")
-
-    # Validate "resume"
-    resumeQualifications = qualifications.get("resume")
-    if not isinstance(resumeQualifications, list):
-        raise HTTPException(status_code=400, detail="'qualifications.resume' must be a list.")
-    if not all(isinstance(item, str) for item in resumeQualifications):
-        raise HTTPException(status_code=400, detail="All items in 'qualifications.resume' must be strings.")
 
     # Validate "job_description"
-    jobDescription = qualifications.get("job_description")
+    jobDescription = analysisResult.get("jobDescriptionSkills")
     if not isinstance(jobDescription, dict):
-        raise HTTPException(status_code=400, detail="'qualifications.job_description' must be a dictionary.")
+        raise HTTPException(status_code=400, detail="jobDescriptionSkills must be a dictionary.")
 
     preferredQualifications = jobDescription.get("preferred")
     if not isinstance(preferredQualifications, list):
-        raise HTTPException(status_code=400, detail="'job_description.preferred' must be a list.")
+        raise HTTPException(status_code=400, detail="'jobDescriptionSkills.preferred' must be a list.")
     if not all(isinstance(item, str) for item in preferredQualifications):
-        raise HTTPException(status_code=400, detail="All items in 'job_description.preferred' must be strings.")
+        raise HTTPException(status_code=400, detail="All items in 'jobDescriptionSkills.preferred' must be strings.")
 
     requiredQualifications = jobDescription.get("required")
     if not isinstance(requiredQualifications, list):
-        raise HTTPException(status_code=400, detail="'job_description.required' must be a list.")
+        raise HTTPException(status_code=400, detail="'jobDescriptionSkills.required' must be a list.")
     if not all(isinstance(item, str) for item in requiredQualifications):
-        raise HTTPException(status_code=400, detail="All items in 'job_description.required' must be strings.")
+        raise HTTPException(status_code=400, detail="All items in 'jobDescriptionSkills.required' must be strings.")
 
     # Validate and extract "suggestions"
     improvementSuggestions = analysisResult.get("suggestions")
@@ -92,12 +79,9 @@ def parseResponse(analysisResult: dict):
 
     return {
         "fitScore": fitScore,
-        "qualifications": {
-            "resume": resumeQualifications,
-            "job_description": {
-                "preferred": preferredQualifications,
-                "required": requiredQualifications,
-            },
+        "jobDescriptionSkills": {
+            "preferred": preferredQualifications,
+            "required": requiredQualifications,
         },
         "suggestions": improvementSuggestions,
     }

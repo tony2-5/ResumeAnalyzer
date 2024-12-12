@@ -10,5 +10,4 @@ pytest
 pypdf
 requests
 huggingface_hub
-stopwords
 scikit-learn
