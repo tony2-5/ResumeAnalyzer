@@ -44,7 +44,7 @@ describe('Dashboard', () => {
   it('Uploads Resume', () => {
     cy.get('button').contains('Upload Resume').click()
     cy.contains("Please select a resume file to upload.").should('exist')
-    cy.get('[data-testid="resume"]').selectFile('cypress/downloads/testresume.pdf')
+    cy.get('[data-testid="resume"]').selectFile('cypress/files/testresume.pdf')
     cy.get('button').contains('Upload Resume').click()
     cy.contains("Resume uploaded successfully.").should('exist')
   })
@@ -56,7 +56,7 @@ describe('Dashboard', () => {
     cy.get('button').contains('Upload Job Description').click()
     cy.contains("Upload resume first.").should('exist')
 
-    cy.get('[data-testid="resume"]').selectFile('cypress/downloads/testresume.pdf')
+    cy.get('[data-testid="resume"]').selectFile('cypress/files/testresume.pdf')
     cy.get('button').contains('Upload Resume').click()
 
     cy.get('button').contains('Upload Job Description').click()
@@ -72,7 +72,7 @@ describe('Dashboard', () => {
     cy.get('button').contains('Upload Job Description').click()
     cy.contains("Upload resume first.").should('exist')
 
-    cy.get('[data-testid="resume"]').selectFile('cypress/downloads/testresume.pdf')
+    cy.get('[data-testid="resume"]').selectFile('cypress/files/testresume.pdf')
     cy.get('button').contains('Upload Resume').click()
 
     cy.get('button').contains('Upload Job Description').click() 
@@ -91,7 +91,7 @@ describe('Dashboard', () => {
     cy.get('button').contains('Upload Job Description').click()
     cy.contains("Upload resume first.").should('exist')
 
-    cy.get('[data-testid="resume"]').selectFile('cypress/downloads/testresume.pdf')
+    cy.get('[data-testid="resume"]').selectFile('cypress/files/testresume.pdf')
     cy.get('button').contains('Upload Resume').click()
 
     cy.get('button').contains('Upload Job Description').click()
