@@ -32,7 +32,6 @@ const Dashboard = () => {
     // Fetch Fit Score Data
     useEffect(() => {
         if (data && data.resumeText!=null && data.jobDescription!=null) {
-            console.log(data)
             setLoading(true);
             const fetchFitScoreData = async () => {
                 try {
@@ -41,7 +40,7 @@ const Dashboard = () => {
                         jobDescription: data.jobDescription
                     }, {
                         headers: {
-                            'session-token': localStorage.getItem('accessToken')
+                            'sessionToken': localStorage.getItem('accessToken')
                         }
                     });
                     const fitScoreData = response.data;

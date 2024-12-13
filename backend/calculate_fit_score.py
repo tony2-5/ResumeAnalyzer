@@ -5,11 +5,10 @@ def calculateFitScore(resumeText, jobDescription, nlpResponse):
     """
     Calculate a fit score based on keyword matches between a resume and a job description.
     Averaged out with nlpResponse fit score
-    :param resume_text: String containing the resume text.
-    :param job_description: String containing the job description.
-    :param required_keywords: List of required keywords (optional).
-    :param preferred_keywords: List of preferred keywords (optional).
-    :return: Fit score as a percentage (0–100).
+    :param resumeText: String containing the resume text.
+    :param jobDescription: String containing the job description.
+    :param nlpResponse: response from nlp api
+    :return: Fit score as a percentage (0–100). Matched keywords as a list
     """
     
     if not resumeText or not jobDescription:
@@ -66,5 +65,5 @@ def calculateFitScore(resumeText, jobDescription, nlpResponse):
             score = (matchingTokens / totalJobTokens) * 100
         else:
             score = 0
-    print(score, nlpResponse['fitScore'])
+            
     return {"fitScore": round((score+nlpResponse['fitScore'])/2),"matchedKeywords":matchingKeywords}

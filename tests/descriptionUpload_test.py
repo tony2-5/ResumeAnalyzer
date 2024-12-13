@@ -14,7 +14,7 @@ def testUploadDescriptionSuccess():
     payload = {
         "job_description": "Looking for a skilled Python developer."
     }
-    headers = {"session-token": "test_token"}
+    headers = {"sessionToken": "test_token"}
     temp_storage["test_token"] = {"resume_text": "uploaded_resume"}
     response = client.post(
         "api/job-description",
@@ -33,7 +33,7 @@ def testUploadDescriptionMissingDescription():
     payload = {
         "job_description": ""
     }
-    headers = {"session-token": "test_token"}
+    headers = {"sessionToken": "test_token"}
 
     response = client.post(
         "api/job-description",
@@ -57,11 +57,11 @@ def testUploadDescriptionMissingSessionToken():
     assert "detail" in response.json()
 
 
-def test_upload_job_description_resume_not_uploaded():
+def testUploadJobDescriptionResumeNotUploaded():
     payload = {
         "job_description": "Looking for a skilled Python developer."
     }
-    headers = {"session-token": "invalid_token"}
+    headers = {"sessionToken": "invalid_token"}
 
     response = client.post(
         "api/job-description",

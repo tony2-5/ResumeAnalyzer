@@ -2,6 +2,9 @@ from pypdf import PdfReader
 import io
 
 def extractTextFromPdf(file: io.BytesIO) -> str:
+    '''
+     Extract text from pdf
+    '''
     try:
         reader = PdfReader(file)
         text = ""

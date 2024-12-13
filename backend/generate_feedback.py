@@ -7,6 +7,9 @@ from sklearn.pipeline import make_pipeline
 stopwords_path = Path(__file__).parent / "stopwords.txt"
 
 def categorizeSuggestions(suggestions):
+    '''
+    basic machine learning model to classify suggestions
+    '''
     # Sample labeled data for training
     trainingData = [
         ("Add programming languages like Python and Java.", "skills"),
@@ -44,6 +47,9 @@ def categorizeSuggestions(suggestions):
     return {"suggestions": suggestions}
 
 def getStopWords():
+    '''
+    for removing non impactful words from our data
+    '''
     # found list of stopwords at https://github.com/Alir3z4/stop-words?tab=readme-ov-file
     with open(stopwords_path, 'r', encoding="utf-8") as file:
         content = file.read().splitlines()
@@ -51,12 +57,15 @@ def getStopWords():
     return set(content)
 
 def tokenize(text):
+    '''
+    break apart text into tokens
+    '''
     return set(re.findall(r'[\w#+]+', text.lower()))
     
 
 def extractReqSkillsFromJobDesc(jobDescription):
     """
-    Extracts required and preferred skills from the job description dynamically.
+    Extracts required from the job description dynamically.
     Handles both structured and unstructured job descriptions.
     """
     # Use regex to identify potential section headers
@@ -84,7 +93,9 @@ def extractReqSkillsFromJobDesc(jobDescription):
     return tokenize(requiredText)-getStopWords()
 
 def generateFeedback(resumeText, jobDescription, nlpResponse):
-    # Feedback is generated using both NLP input and own algorithm
+    '''
+    Feedback generated combining both NLP api input and own algorithm
+    '''
     if not resumeText or not jobDescription:
         return {"missing_keywords": [], "suggestions": []}
 

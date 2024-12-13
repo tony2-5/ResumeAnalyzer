@@ -18,7 +18,7 @@ def testValidFeedbackResponse():
         "jobDescription": "Looking for a Python developer with REST API experience and AWS knowledge."
     }
     headers= {
-        'session-token': "test_token"
+        'sessionToken': "test_token"
     }
     response = client.post("/api/fit-score", json=payload, headers=headers)
 
@@ -41,7 +41,7 @@ def testMissingJobDescription():
         "resumeText": "Experienced Python developer with REST API experience.",
     }
     headers= {
-        'session-token': "test_token"
+        'sessionToken': "test_token"
     }
     response = client.post("/api/fit-score", json=payload,headers=headers)
     assert response.status_code == 400
@@ -59,7 +59,7 @@ def testMissingResume():
         "jobDescription": "Looking for a Python developer with REST API experience and AWS knowledge."
     }
     headers= {
-        'session-token': "test_token"
+        'sessionToken': "test_token"
     }
     response = client.post("/api/fit-score", json=payload, headers=headers)
     assert response.status_code == 400
@@ -77,7 +77,7 @@ def testOversizedInput():
     }
     payload = {"resumeText": oversizedText, "jobDescription": oversizedText}
     headers= {
-        'session-token': "test_token"
+        'sessionToken': "test_token"
     }
     response = client.post("/api/fit-score", json=payload, headers=headers)
     assert response.status_code == 400 
@@ -94,7 +94,7 @@ def testInvalidResume():
         "jobDescription": "Valid job description here."
     }
     headers= {
-        'session-token': "test_token"
+        'sessionToken': "test_token"
     }
     response = client.post("/api/fit-score", json=payload, headers=headers)
     assert response.status_code == 400
@@ -111,7 +111,7 @@ def testInvalidDescription():
         "jobDescription": 123456789 # Invalid format: not a string
     }
     headers= {
-        'session-token': "test_token"
+        'sessionToken': "test_token"
     }
     response = client.post("/api/fit-score", json=payload, headers=headers)
     assert response.status_code == 400

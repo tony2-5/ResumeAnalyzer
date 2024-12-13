@@ -42,6 +42,5 @@ def testLoginGetUser():
 def testCurrentUserNotFound():
     headers = {"Authorization": f"Bearer wrong-token"}
     response = client.get("api/users/me", headers=headers)
-    print(response.json())
     assert response.status_code == 401
     assert response.json() == {"detail": "Cannot authorize user."}

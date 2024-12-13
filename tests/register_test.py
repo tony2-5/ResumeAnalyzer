@@ -86,6 +86,5 @@ def testRegisterMissingUsername():
             "password": "securePassword",
         },
     )
-    print(response.json())
     assert response.status_code == 400
     assert "Field required" in response.json()["detail"][0]["msg"]

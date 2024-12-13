@@ -17,8 +17,8 @@ def testValidResumeUpload():
     with open("./sample.pdf", "rb") as file:
         response = client.post(
             "/api/resume-upload",
-            files={"resume_file": file},
-            headers={"session-token": "test-token"}
+            files={"resumeFile": file},
+            headers={"sessionToken": "test-token"}
         )
         assert response.status_code == 200
         assert response.json()["message"] == "Resume uploaded successfully."
@@ -27,8 +27,8 @@ def testInvalidResumeFileType():
     with open("./sample.txt", "rb") as file:
         response = client.post(
             "/api/resume-upload",
-            files={"resume_file": file},
-            headers={"session-token": "test-token"}
+            files={"resumeFile": file},
+            headers={"sessionToken": "test-token"}
         )
         assert response.status_code == 400
         assert response.json()["detail"] == "Invalid file type. Only PDF files are allowed."

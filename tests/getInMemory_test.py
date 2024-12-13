@@ -16,7 +16,7 @@ def testGetResumeDataSuccess():
     """
     response = client.get(
         "api/resume-data",
-        headers={"session-token": "test-session"}
+        headers={"sessionToken": "test-session"}
     )
     assert response.status_code == 200
     assert response.json() == {
@@ -28,7 +28,7 @@ def testGetResumeDataSuccess():
 def testGetDataSessionNotFound():
     response = client.get(
         "api/resume-data",
-        headers={"session-token": "invalid-session"}
+        headers={"sessionToken": "invalid-session"}
     )
     assert response.status_code == 404
     assert response.json() == {"detail": "Session not found."}

@@ -24,13 +24,13 @@ const ResumeDescriptionUpload = ({ setData }) => {
         }
 
         const formData = new FormData();
-        formData.append('resume_file', resumeFile);
+        formData.append('resumeFile', resumeFile);
 
         try {
             await axiosInstance.post('/api/resume-upload', formData, {
                 headers: { 
                     'Content-Type': 'multipart/form-data',
-                    'session-token': localStorage.getItem('accessToken') 
+                    'sessionToken': localStorage.getItem('accessToken') 
                 },
             });
 
@@ -52,27 +52,24 @@ const handleJobDescriptionSubmit = async () => {
     }
 
     try {
-        console.log("Sending job description:", jobDescription); // Log data being sent
         await axiosInstance.post('/api/job-description', {
             job_description: jobDescription
         }, {
             headers: { 
-                'session-token': localStorage.getItem('accessToken') 
+                'sessionToken': localStorage.getItem('accessToken') 
             }
         });
 
         setMessage('Job description uploaded successfully.');
     } catch (error) {
-        console.error('Error uploading job description:', error.response?.data); // Log the error response
         setMessage(error.response?.data?.detail || 'Failed to upload job description.');
     }
 
     try {
         const response = await axiosInstance.get('/api/resume-data', {
-            headers: { 'session-token': localStorage.getItem('accessToken') }
+            headers: { 'sessionToken': localStorage.getItem('accessToken') }
         });
 
-        console.log("Resume data retrieved:", response.data); // Log the response from the backend
         setData({
             resumeText: response.data.data.resume_text, // Assuming resume_text comes from the response
             jobDescription: jobDescription, // This is already available
