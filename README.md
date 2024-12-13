@@ -51,7 +51,8 @@ Our project aims to allow users to upload their resume and receive feedback and 
 4. Go to backend folder with `cd ./backend`
 5. Create a file inside of the backend directory called `.env`
 6. Within the .env file define a variable `JWT_KEY` and set it equal to the output of running `openssl rand -hex 32` in the terminal.
-7. Run the backend using `fastapi dev main.py`
+7. Within the same .env file add the hugging face api key (sent over discord)
+8. Run the backend using `fastapi dev main.py`
 ### Frontend Setup
 1. Return to the main directory
 2. From the main directory go to the frontend/src folder with `cd ./frontend/src`
@@ -60,8 +61,10 @@ Our project aims to allow users to upload their resume and receive feedback and 
 
 ### Running Frontend Tests (After project initialization)
 1. From the main directory go to the frontend/src folder with `cd ./frontend/src`
-2. Run `npm test`
+2. Run `npm test` to run frontend unit tests
+3. From the main directory go to the frontend/src/src/e2eTests folder with `cd ./frontend/src/src/e2eTests`
+4. Run `npx cypress run` to run frontend end-to-end tests
 
 ### Running Backend Tests (After project initialization)
 1. From the main directory go to the tests folder `cd ./tests`
-2. Run `pytest`
+2. Run `pytest` to run backend unit tests

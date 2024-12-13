@@ -1,7 +1,20 @@
-import { email, password } from "./register.cy"
+const email = "test2@test.com"
+const password = "dietdew"
 const jobDescription = "An experienced and self-motivated Test Engineer with a strong technical background, proficient in acceptance testing, exploratory testing, and test management, skilled in creating and executing test plans, documenting results, improving testing strategies, and collaborating with teams to deliver high-quality software solutions while ensuring attention to detail and effective problem-solving."
 
 describe('Dashboard', () => {
+    before(()=>{
+        cy.intercept('POST', "http://localhost:8000/api/register").as('registerRequest');
+
+		cy.visit('http://localhost:3000/register')
+		cy.get('#registerEmail').type(email)
+		cy.get('#username').type('test2')
+		cy.get('#registerPassword').type(password)
+		cy.get('#confirmPassword').type(password)
+
+		cy.get('button').contains("Register").click()
+    })
+    
     beforeEach(()=> {
         cy.visit('http://localhost:3000/login')
         cy.get('#email').type(email)
@@ -104,11 +117,14 @@ describe('Dashboard', () => {
 
         // Use pdf-parse to extract text from the PDF
         cy.task('readPdf', "cypress/downloads/Resume_Analysis_Report.pdf").then((pdfText) => {
-        // Validate PDF content
-        expect(pdfText).to.include('Resume Analysis Report');
-        expect(pdfText).to.include('Fit Score:');
-        expect(pdfText).to.include('Matched Keywords:');
-        expect(pdfText).to.include('Feedback:');
+            // Validate PDF content
+            expect(pdfText).to.include('Resume Analysis Report');
+            expect(pdfText).to.include('Fit Score:');
+            expect(pdfText).to.include('Matched Keywords:');
+            expect(pdfText).to.include('Feedback:');
         });
+
+        // delete user incase tests ever rerun
+        cy.request({method: "DELETE",url: "http://localhost:8000/api/delete_user",qs: { email: email }})
     })
 })
