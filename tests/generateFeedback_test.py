@@ -1,11 +1,6 @@
 import pytest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 from backend.generate_feedback import generateFeedback
-
-@pytest.fixture
-def mock_generateFeedback():
-    """Mock the generateFeedback function."""
-    return AsyncMock(return_value={"missingKeywords": ["Python, AWS"], "feedback": ["Learn REST APIs"]})
 
 @pytest.mark.parametrize(
     "resume_text, job_description, expected_missing_keywords, expected_suggestions",

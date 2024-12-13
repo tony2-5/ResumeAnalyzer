@@ -17,7 +17,10 @@ def testValidPayload():
     response = client.post("/api/analyze", headers={"Authorization": "Bearer test_token"})
     assert response.status_code == 200
     assert "fitScore" in response.json()
-    assert "improvementSuggestions" in response.json()
+    assert "jobDescriptionSkills" in response.json()
+    assert "preferred" in response.json()["jobDescriptionSkills"]
+    assert "required" in response.json()["jobDescriptionSkills"]
+    assert "suggestions" in response.json()
 
 def testMissingFields():
     temp_storage.clear()
@@ -57,7 +60,10 @@ def testInputFormat():
     response = client.post("/api/analyze", headers={"Authorization": "Bearer test_token"})
     assert response.status_code == 200
     assert isinstance(response.json()["fitScore"], int)
-    assert isinstance(response.json()["improvementSuggestions"], list)
+    assert isinstance(response.json()["jobDescriptionSkills"], dict)
+    assert isinstance(response.json()["jobDescriptionSkills"]['preferred'], list)
+    assert isinstance(response.json()["jobDescriptionSkills"]['required'], list)
+    assert isinstance(response.json()["suggestions"], list)
 
 def testInvalidInputFormat():
     temp_storage.clear()
@@ -69,10 +75,14 @@ def testInvalidInputFormat():
     assert response.status_code == 400
     assert response.json() == {"detail": "Both resume_text and job_description must be strings."}
 
-def test_valid_response():
+def testValidResponse():
     # Given a valid API response
     analysisResult = {
-        "fitscore": "85",
+        "fitscore": "50",
+        "jobDescriptionSkills": {
+            "preferred": ["excel", "marketing"],
+            "required": ["management"]
+        },
         "suggestions": [
             "Add skills related to project management.",
             "Improve your summary section to include specific achievements."
@@ -81,15 +91,21 @@ def test_valid_response():
     
     result = parseResponse(analysisResult)
     
-    assert result.fitScore == 85
-    assert result.improvementSuggestions == [
+    assert result['fitScore'] == 50
+    assert result["jobDescriptionSkills"]["preferred"] == ["excel", "marketing"]
+    assert result["jobDescriptionSkills"]["required"] == ["management"]
+    assert result["suggestions"] == [
         "Add skills related to project management.",
         "Improve your summary section to include specific achievements."
     ]
 
-def test_missing_fit_score():
+def testMissingFitScore():
     # Given an API response missing the fit_score
     analysisResult = {
+        "jobDescriptionSkills": {
+            "preferred": ["excel", "marketing"],
+            "required": ["management"]
+        },
         "suggestions": [
             "Add skills related to project management.",
             "Improve your summary section to include specific achievements."
@@ -108,10 +124,14 @@ def test_malformed_response():
     with pytest.raises(HTTPException):
         parseResponse(analysisResult)
 
-def test_invalid_fit_score_type():
+def testInvalidFitScoreType():
     # Given an API response with an invalid fit_score type
     analysisResult = {
         "fitscore": "invalid",
+        "jobDescriptionSkills": {
+            "preferred": ["excel", "marketing"],
+            "required": ["management"]
+        },
         "suggestions": [
             "Add skills related to project management.",
             "Improve your summary section to include specific achievements."
@@ -122,15 +142,21 @@ def test_invalid_fit_score_type():
     with pytest.raises(HTTPException):
         parseResponse(analysisResult)
 
-def test_empty_feedback():
+def testEmptyFeedback():
     # Given an API response with empty feedback
     analysisResult = {
         "fitscore": "85",
+        "jobDescriptionSkills": {
+            "preferred": ["excel", "marketing"],
+            "required": ["management"]
+        },
         "suggestions": []
     }
     
     # When the parseResponse function is called
     result = parseResponse(analysisResult)
     
-    assert result.fitScore == 85
-    assert result.improvementSuggestions == []
+    assert result["fitScore"] == 85
+    assert result["jobDescriptionSkills"]["preferred"] == ["excel", "marketing"]
+    assert result["jobDescriptionSkills"]["required"] == ["management"]
+    assert result["suggestions"] == []

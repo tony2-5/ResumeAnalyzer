@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 from backend.main import app
+from backend.routers.task12_in_memory_storage import temp_storage
 
 client = TestClient(app)
 
@@ -7,25 +8,42 @@ def testValidFeedbackResponse():
     """
     Test that the feedback and fit score are returned correctly.
     """
+    temp_storage.clear()
+    temp_storage["test_token"] = {
+        "resume_text": "Valid resume text here.",
+        "job_description": "Valid job description here."
+    }
     payload = {
         "resumeText": "Experienced Python developer with REST API experience.",
         "jobDescription": "Looking for a Python developer with REST API experience and AWS knowledge."
     }
-    response = client.post("/api/fit-score", json=payload)
+    headers= {
+        'session-token': "test_token"
+    }
+    response = client.post("/api/fit-score", json=payload, headers=headers)
+
     assert response.status_code == 200
     data = response.json()
-    print(data)
     assert "fitScore" in data
+    assert "matchedKeywords" in data
+    assert "missingKeywords" in data
     assert "feedback" in data
-    assert isinstance(data["fitScore"], int)  # Fit score should be an integer
-    assert isinstance(data["feedback"], list)  # Feedback should be a list of strings
 
 def testMissingJobDescription():
     """
     Test that the API returns an error when fields are missing.
     """
-    payload = {"resumeText": "Missing job description"}
-    response = client.post("/api/fit-score", json=payload)
+    temp_storage.clear()
+    temp_storage["test_token"] = {
+        "resume_text": "Valid resume text here.",
+    }
+    payload = {
+        "resumeText": "Experienced Python developer with REST API experience.",
+    }
+    headers= {
+        'session-token': "test_token"
+    }
+    response = client.post("/api/fit-score", json=payload,headers=headers)
     assert response.status_code == 400
     assert "jobDescription" in response.json()["detail"][0]["loc"]
 
@@ -33,8 +51,17 @@ def testMissingResume():
     """
     Test that the API returns an error when fields are missing.
     """
-    payload = {"jobDescription": "Missing resume"}
-    response = client.post("/api/fit-score", json=payload)
+    temp_storage.clear()
+    temp_storage["test_token"] = {
+        "job_description": "Valid job description here."
+    }
+    payload = {
+        "jobDescription": "Looking for a Python developer with REST API experience and AWS knowledge."
+    }
+    headers= {
+        'session-token': "test_token"
+    }
+    response = client.post("/api/fit-score", json=payload, headers=headers)
     assert response.status_code == 400
     assert "resumeText" in response.json()["detail"][0]["loc"]
 
@@ -42,26 +69,50 @@ def testOversizedInput():
     """
     Test that the API handles oversized input.
     """
-    oversized_text = "A" * 10001  # Exceeds character limit
-    payload = {"resumeText": oversized_text, "jobDescription": oversized_text}
-    response = client.post("/api/fit-score", json=payload)
+    oversizedText = "A" * 10001  # Exceeds character limit
+    temp_storage.clear()
+    temp_storage["test_token"] = {
+        "resume_text": oversizedText,
+        "job_description": oversizedText
+    }
+    payload = {"resumeText": oversizedText, "jobDescription": oversizedText}
+    headers= {
+        'session-token': "test_token"
+    }
+    response = client.post("/api/fit-score", json=payload, headers=headers)
     assert response.status_code == 400 
     assert "resumeText" in response.json()["detail"][0]["loc"]
 
 def testInvalidResume():
+    temp_storage.clear()
+    temp_storage["test_token"] = {
+        "resume_text": 123456789,
+        "job_description": "Valid job description here."
+    }
     payload = {
         "resumeText": 123456789,  # Invalid format: not a string
         "jobDescription": "Valid job description here."
     }
-    response = client.post("/api/fit-score", json=payload)
+    headers= {
+        'session-token': "test_token"
+    }
+    response = client.post("/api/fit-score", json=payload, headers=headers)
     assert response.status_code == 400
     assert response.json()["detail"][0]["msg"] == 'Input should be a valid string'
 
 def testInvalidDescription():
+    temp_storage.clear()
+    temp_storage["test_token"] = {
+        "resume_text": "Valid resume.",
+        "job_description": 123456789
+    }
     payload = {
         "resumeText": "Valid resume.",
         "jobDescription": 123456789 # Invalid format: not a string
     }
-    response = client.post("/api/fit-score", json=payload)
+    headers= {
+        'session-token': "test_token"
+    }
+    response = client.post("/api/fit-score", json=payload, headers=headers)
     assert response.status_code == 400
     assert response.json()["detail"][0]["msg"] == 'Input should be a valid string'

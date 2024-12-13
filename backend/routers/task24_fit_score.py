@@ -16,9 +16,6 @@ async def calculateFitScoreApi(payload: FitScorePayload, session_token: str = He
     resumeText = payload.resumeText
     jobDescription = payload.jobDescription
 
-    temp_storage[session_token] = {"resume_text": resumeText, "job_description": jobDescription}
-
-
     # Validate  presence, type, and character limits
     if not resumeText or not jobDescription:
         raise HTTPException(status_code=400, detail="Both resume_text and job_description are required.")
@@ -30,6 +27,4 @@ async def calculateFitScoreApi(payload: FitScorePayload, session_token: str = He
     fitScore = calculateFitScore(resumeText, jobDescription, nlpResponse)
     feedback = generateFeedback(resumeText, jobDescription, nlpResponse)
 
-    print(f"fitscore\t {fitScore}")
-    print(f"feedback\t {feedback}")
     return {"fitScore": fitScore["fitScore"], "matchedKeywords": fitScore["matchedKeywords"], "missingKeywords": feedback["missingKeywords"], "feedback": feedback['feedback']}

@@ -22,7 +22,10 @@ def calculateFitScore(resumeText, jobDescription, nlpResponse):
     tokenizedRequiredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['required']))
     tokenizedPreferredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['preferred']))
     categorizedJobTokens=extractReqSkillsFromJobDesc(jobDescription)
-    requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens)
+    if(len(categorizedJobTokens)>0):
+        requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens)
+    else:
+        requiredTokens = tokenizedRequiredNLP
     preferredTokens =  set(tokenizedPreferredNLP & jobTokens)
 
     # Count matches for required and preferred keywords
@@ -63,7 +66,5 @@ def calculateFitScore(resumeText, jobDescription, nlpResponse):
             score = (matchingTokens / totalJobTokens) * 100
         else:
             score = 0
-
-    
-    print(f"score: {score}, nlpScore: {nlpResponse['fitScore']}")
+    print(score, nlpResponse['fitScore'])
     return {"fitScore": round((score+nlpResponse['fitScore'])/2),"matchedKeywords":matchingKeywords}

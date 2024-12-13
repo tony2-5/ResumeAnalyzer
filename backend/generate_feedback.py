@@ -96,7 +96,10 @@ def generateFeedback(resumeText, jobDescription, nlpResponse):
     tokenizedRequiredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['required']))
     tokenizedPreferredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['preferred']))
     categorizedJobTokens=extractReqSkillsFromJobDesc(jobDescription)
-    requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens)
+    if(len(categorizedJobTokens)>0):
+        requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens)
+    else:
+        requiredTokens = tokenizedRequiredNLP
     preferredTokens =  set(tokenizedPreferredNLP & jobTokens)
 
     # If no required or preferred, default to job description tokens
