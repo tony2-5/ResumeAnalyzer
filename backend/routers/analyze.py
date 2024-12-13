@@ -2,7 +2,7 @@ import os
 import json
 from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Header
 from backend.routers.task12_in_memory_storage import temp_storage
 
 # Load Hugging Face API key
@@ -110,13 +110,16 @@ def parseResponse(analysisResult: dict):
     
 
 @router.post("/analyze")
-async def analyzeResumeAndJobDescription(sessionToken: str):
+async def analyzeResumeAndJobDescription(sessionToken: str=None, authorization: str= Header(...)):
     """
     Analyze the resume and job description to generate a fit score and feedback.
     :param authorization: Authorization token from the client
     :param payload: User input from the frontend
     :return: Analysis results including fitScore, skillsMatched, and improvementSuggestions
     """
+    if(sessionToken==None):
+        sessionToken = authorization.split("Bearer ")[1]
+
     if sessionToken not in temp_storage:
         raise HTTPException(status_code=404, detail="Session not found.")
     

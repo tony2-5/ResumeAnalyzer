@@ -15,13 +15,12 @@ def testUploadDescriptionSuccess():
         "job_description": "Looking for a skilled Python developer."
     }
     headers = {"session-token": "test_token"}
-    temp_storage["test_token"] = {"resume": "uploaded_resume"}
+    temp_storage["test_token"] = {"resume_text": "uploaded_resume"}
     response = client.post(
         "api/job-description",
         json=payload,
         headers=headers
     )
-    print(response.json())
     assert response.status_code == 200
     assert response.json() == {
         "job_description": "Looking for a skilled Python developer.",
