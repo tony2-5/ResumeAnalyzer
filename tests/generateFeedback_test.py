@@ -79,7 +79,7 @@ from backend.generate_feedback import generateFeedback
 )
 
 @patch("backend.routers.task24_fit_score.generateFeedback")
-def test_generate_feedback(
+def testGenerateFeedback(
     mock_generate_feedback,
     resume_text,
     job_description,
@@ -106,8 +106,5 @@ def test_generate_feedback(
     )
 
     # Assert the response
-    print(response)
-    print(expected_missing_keywords)
-    print(expected_suggestions)
     assert response["missingKeywords"] == expected_missing_keywords
     assert response["feedback"]["suggestions"] == expected_suggestions

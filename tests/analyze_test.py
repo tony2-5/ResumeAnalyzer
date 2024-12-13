@@ -47,7 +47,6 @@ def testCharacterLimitExceeded():
 def testHuggingFaceApiError(mock_analyze):
     mock_analyze.side_effect = Exception("API error")
     response = client.post("/api/analyze", headers={"Authorization": "Bearer test_token"})
-    print(response)
     assert response.status_code == 400
     assert "detail" in response.json()
 

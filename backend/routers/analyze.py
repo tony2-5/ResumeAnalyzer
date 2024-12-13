@@ -31,7 +31,6 @@ def analyzeText(resumeText: str, jobDescription: str):
         messages=input, 
         max_tokens=800
     )
-    print(response.choices[0].message.content)
     try:
         return json.loads(response.choices[0].message.content)
     except json.JSONDecodeError:
@@ -51,7 +50,6 @@ def handleBadJson(badJson):
         messages=input, 
         max_tokens=800
     )
-    print(response.choices[0].message.content)
     try:
         return json.loads(response.choices[0].message.content)
     except json.JSONDecodeError:
@@ -142,7 +140,6 @@ async def analyzeResumeAndJobDescription(sessionToken: str=None, authorization: 
         # Call Hugging Face API and process the response
         analysisResult = analyzeText(resumeText, jobDescription)
     except Exception as e:
-        print(f"Error during analysis: {str(e)}") 
         raise HTTPException(status_code=400, detail=f"Error processing analysis: {str(e)}")
     
     return parseResponse(analysisResult)

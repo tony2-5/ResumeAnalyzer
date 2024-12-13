@@ -9,25 +9,28 @@ router = APIRouter()
 MAX_FILE_SIZE_MB = 2 * 1024 * 1024  
 
 @router.post("/resume-upload", status_code=200)
-async def resumeUpload(resume_file: UploadFile, session_token: str = Header(...)):
+async def resumeUpload(resumeFile: UploadFile, sessionToken: str = Header(...)):
+    '''
+    Upload resume to backend temp storage
+    '''
     # Validate file type and size
-    if resume_file.content_type != "application/pdf":
+    if resumeFile.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Invalid file type. Only PDF files are allowed.")
 
-    file_content = await resume_file.read()
-    if len(file_content) > MAX_FILE_SIZE_MB:
+    fileContent = await resumeFile.read()
+    if len(fileContent) > MAX_FILE_SIZE_MB:
         raise HTTPException(status_code=400, detail="File size exceeds the 2MB limit.")
 
     # Convert file content to a BytesIO object
-    file_like_object = io.BytesIO(file_content)
+    fileLikeObject = io.BytesIO(fileContent)
 
     # Extract text from the PDF
-    extracted_text = extractTextFromPdf(file_like_object)
+    extractedText = extractTextFromPdf(fileLikeObject)
 
     # Store the resume text in temporary storage
-    if session_token not in temp_storage:
-        temp_storage[session_token] = {}
+    if sessionToken not in temp_storage:
+        temp_storage[sessionToken] = {}
     
-    temp_storage[session_token]["resume_text"] = extracted_text
+    temp_storage[sessionToken]["resume_text"] = extractedText
 
-    return {"message": "Resume uploaded successfully.", "token": session_token}
+    return {"message": "Resume uploaded successfully.", "token": sessionToken}
