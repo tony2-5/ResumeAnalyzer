@@ -1,6 +1,19 @@
-import { email, password } from "./register.cy"
+const email = "test2@test.com"
+const password = "dietdew"
 
 describe('User Login', () => {
+    before(()=>{
+        cy.intercept('POST', "http://localhost:8000/api/register").as('registerRequest');
+
+		cy.visit('http://localhost:3000/register')
+		cy.get('#registerEmail').type(email)
+		cy.get('#username').type('test2')
+		cy.get('#registerPassword').type(password)
+		cy.get('#confirmPassword').type(password)
+
+		cy.get('button').contains("Register").click()
+    })
+    
 	it('Allows access to the site', () => {
 		cy.visit('http://localhost:3000')
 		cy.url().should('include', '/login')
@@ -50,5 +63,8 @@ describe('User Login', () => {
 		cy.get('button').contains("Login").click()
 
 		cy.url().should('include', '/dashboard')
+
+        // delete user incase tests ever rerun
+        cy.request({method: "DELETE",url: "http://localhost:8000/api/delete_user",qs: { email: email }})
   	})
 })

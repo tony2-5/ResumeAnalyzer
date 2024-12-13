@@ -1,5 +1,5 @@
-export const email = "test2@test.com"
-export const password = "dietdew"
+const email = "test2@test.com"
+const password = "dietdew"
 
 describe('User Register', () => {
     it('Allows access to the site', () => {
@@ -64,7 +64,6 @@ describe('User Register', () => {
 
 		cy.get('.error').contains("Passwords do not match.").should('exist')
     })
-
 	it('Allows a user to register', () => {
 		cy.intercept('POST', "http://localhost:8000/api/register").as('registerRequest');
 
@@ -73,12 +72,9 @@ describe('User Register', () => {
 		cy.get('#username').type('test2')
 		cy.get('#registerPassword').type(password)
 		cy.get('#confirmPassword').type(password)
-        
-		// incase user already exists
-		cy.request({method: "DELETE",url: "http://localhost:8000/api/delete_user",qs: { email: email }})
 
 		cy.get('button').contains("Register").click()
-	
+
 		cy.wait('@registerRequest').then((interception) => {
             expect(interception.response.statusCode).to.eq(201);
             expect(interception.response.body).to.have.property(
@@ -86,6 +82,9 @@ describe('User Register', () => {
                 "User registered."
             );
         });
+
+        // delete user incase tests ever rerun
+        cy.request({method: "DELETE",url: "http://localhost:8000/api/delete_user",qs: { email: email }})
 	})
 
 	it('Checks if user already registered', () => {
@@ -96,15 +95,19 @@ describe('User Register', () => {
 		cy.get('#confirmPassword').type(password)
         
 		cy.get('button').contains("Register").click()
+        cy.wait(2000)
+
+        cy.visit('http://localhost:3000/register')
+		cy.get('#registerEmail').type(email)
+		cy.get('#username').type('test2')
+		cy.get('#registerPassword').type(password)
+		cy.get('#confirmPassword').type(password)
+        
+		cy.get('button').contains("Register").click()
 
 		cy.get('.error').contains("Email already registered.").should('exist')
+
+        // delete user incase tests ever rerun
+        cy.request({method: "DELETE",url: "http://localhost:8000/api/delete_user",qs: { email: email }})
 	})
 })
-
-// cy.request({method: "DELETE",url: "http://localhost:8000/api/delete_user",qs: { email: 'test2@test.com' }})
-// .then((response) => {
-// 	expect(response.body).to.have.property(
-// 		"message",
-// 		`User with email test2@test.com has been deleted.`
-// 	);
-// });
