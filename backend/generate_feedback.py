@@ -123,4 +123,4 @@ def generateFeedback(resumeText, jobDescription, nlpResponse):
         else:
             suggestions.append(f"Add details that demonstrate your expertise in '{keyword}'.")
 
-    return {"missingKeywords": missingKeywords, "feedback": categorizeSuggestions(suggestions+nlpResponse["suggestions"])}
+    return {"missingKeywords": missingKeywords, "feedback": categorizeSuggestions(nlpResponse["suggestions"]+suggestions)}
