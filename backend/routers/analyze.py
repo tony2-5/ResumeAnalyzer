@@ -31,11 +31,32 @@ def analyzeText(resumeText: str, jobDescription: str):
         messages=input, 
         max_tokens=800
     )
-    print(response.choices[0].message.content.strip("()"))
+    print(response.choices[0].message.content)
+    try:
+        return json.loads(response.choices[0].message.content)
+    except json.JSONDecodeError:
+        return handleBadJson(response.choices[0].message.content)
+    
+def handleBadJson(badJson):
+    client = InferenceClient(api_key=HUGGINGFACE_API_KEY)
+
+    input = [
+        {
+            "role": "user",
+            "content": "Return only this json in the correct form no additional tags: "+badJson
+        }
+    ]
+    response = client.chat.completions.create(
+        model="meta-llama/Llama-3.3-70B-Instruct", 
+        messages=input, 
+        max_tokens=800
+    )
+    print(response.choices[0].message.content)
     try:
         return json.loads(response.choices[0].message.content)
     except json.JSONDecodeError:
         raise ValueError("Error decoding response from hugging face")
+
 
 def parseResponse(analysisResult: dict):
     """

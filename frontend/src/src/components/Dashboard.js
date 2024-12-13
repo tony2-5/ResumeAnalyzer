@@ -60,35 +60,55 @@ const Dashboard = () => {
 
     const generatePDF = () => {
         const doc = new jsPDF();
+        const pageHeight = doc.internal.pageSize.height; // Page height in points
+        const margin = 10; // Top and bottom margins
+        let yPosition = margin; // Initial yPosition
+    
+        const addNewPageIfNeeded = () => {
+            if (yPosition >= pageHeight - margin) {
+                doc.addPage();
+                yPosition = margin; // Reset yPosition to the top of the new page
+            }
+        };
+    
         doc.setFont("helvetica", "bold");
         // Title
-        doc.text("Resume Analysis Report", 10, 10);
+        doc.text("Resume Analysis Report", 10, yPosition);
+        yPosition += 10; // Move down
     
         // Fit Score
-        doc.text(`Fit Score: ${fitScore}%`, 10, 20);
+        addNewPageIfNeeded();
+        doc.text(`Fit Score: ${fitScore}%`, 10, yPosition);
+        yPosition += 10; // Move down
     
         // Matched Keywords
-        doc.text("Matched Keywords:", 10, 30);
+        addNewPageIfNeeded();
+        doc.text("Matched Keywords:", 10, yPosition);
         doc.setFont("helvetica", "normal");
-        let yPosition = 40; // Initial position for matched keywords
-        matchedKeywords.forEach((keyword, index) => {
-            const wrappedText = doc.splitTextToSize(`- ${keyword}`, 180); // Wrap the keyword text
+        yPosition += 10; // Move down
+    
+        matchedKeywords.forEach(keyword => {
+            const wrappedText = doc.splitTextToSize(`- ${keyword}`, 180);
             wrappedText.forEach(line => {
+                addNewPageIfNeeded();
                 doc.text(line, 10, yPosition);
                 yPosition += 10; // Increment yPosition for each line
             });
         });
-        
+    
         // Feedback
         doc.setFont("helvetica", "bold");
-        doc.text("Feedback:", 10, yPosition + 10); // Add extra space before feedback
+        addNewPageIfNeeded();
+        doc.text("Feedback:", 10, yPosition);
         doc.setFont("helvetica", "normal");
-        yPosition += 20; // Adjust position for feedback section
-        feedback.forEach((item, index) => {
-            const wrappedText = doc.splitTextToSize(`- ${item.text}`, 180); // Wrap feedback text
+        yPosition += 10; // Move down
+    
+        feedback.forEach(item => {
+            const wrappedText = doc.splitTextToSize(`- ${item.text}`, 180);
             wrappedText.forEach(line => {
+                addNewPageIfNeeded();
                 doc.text(line, 10, yPosition);
-                yPosition += 10; // Increment yPosition for each line of wrapped text
+                yPosition += 10; // Increment yPosition for each line
             });
         });
     
