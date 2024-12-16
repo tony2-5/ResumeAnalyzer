@@ -90,11 +90,9 @@ describe('Dashboard', () => {
 
         cy.get('button').contains('Upload Job Description').click() 
 
-        cy.get('.spinner-container').should('not.exist', { timeout: 25000 }); // make sure loading done
-
         // suggestions and skills get populated
-        cy.get(".dashboard > :nth-child(3) > ul > li")
-        cy.get(".dashboard > :nth-child(4) > ul > li")
+        cy.get(".dashboard > :nth-child(3) > ul > li", { timeout: 30000 }) // make sure loading done
+        cy.get(".dashboard > :nth-child(4) > ul > li", { timeout: 30000 }) // make sure loading done
     })
 
     it('Download pdf works', () => {
