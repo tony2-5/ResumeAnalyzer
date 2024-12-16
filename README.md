@@ -46,7 +46,7 @@ Our project aims to allow users to upload their resume and receive feedback and 
 ## Project Setup
 ### Backend Setup
 1. Setup python virtual environment using `python -m venv venv` from the main directory
-2. Activate virtual environment with `source venv/bin/activate` (using mac may differ for other operating systems)
+2. Activate virtual environment with `source venv/bin/activate` (`venv/Scripts/activate` on Windows)
 3. Install python backend dependencies using `pip install -r ./requirements.txt` from the main directory
 4. Go to backend folder with `cd ./backend`
 5. Create a file inside of the backend directory called `.env`
