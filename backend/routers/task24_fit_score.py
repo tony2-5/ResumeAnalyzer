@@ -22,7 +22,10 @@ async def calculateFitScoreApi(payload: FitScorePayload, sessionToken: str = Hea
         raise HTTPException(status_code=400, detail="Both resume_text and job_description must be strings.")
     if len(resumeText) > 10000 or len(jobDescription) > 10000:
         raise HTTPException(status_code=400, detail="Inputs exceed the maximum character limit of 10,000 characters each.")
-    nlpResponse = await analyzeResumeAndJobDescription(sessionToken)
+    try:
+        nlpResponse = await analyzeResumeAndJobDescription(sessionToken)
+    except Exception:
+        nlpResponse = {}
     fitScore = calculateFitScore(resumeText, jobDescription, nlpResponse)
     feedback = generateFeedback(resumeText, jobDescription, nlpResponse)
 

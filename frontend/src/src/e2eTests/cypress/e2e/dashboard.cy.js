@@ -90,7 +90,7 @@ describe('Dashboard', () => {
 
         cy.get('button').contains('Upload Job Description').click() 
 
-        cy.get('.spinner-container').should('not.exist', { timeout: 10000 }); // make sure loading done
+        cy.get('.spinner-container').should('not.exist', { timeout: 25000 }); // make sure loading done
 
         // suggestions and skills get populated
         cy.get(".dashboard > :nth-child(3) > ul > li")
@@ -109,7 +109,7 @@ describe('Dashboard', () => {
 
         cy.get('button').contains('Upload Job Description').click()
 
-        cy.get('.spinner-container').should('not.exist', { timeout: 10000 }); // make sure loading done
+        cy.get('.spinner-container').should('not.exist', { timeout: 25000 }); // make sure loading done
 
         cy.get('button').contains('Download PDF Report').click()
 

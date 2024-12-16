@@ -104,15 +104,20 @@ def generateFeedback(resumeText, jobDescription, nlpResponse):
     resumeTokens = tokenize(resumeText)
     jobTokens = tokenize(jobDescription)
 
-    tokenizedRequiredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['required']))
-    tokenizedPreferredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['preferred']))
-    categorizedJobTokens=extractReqSkillsFromJobDesc(jobDescription)
-    if(len(categorizedJobTokens)>0):
-        requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens)
+    # Convert required and preferred to sets for comparison
+    if(nlpResponse):
+        tokenizedRequiredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['required']))
+        tokenizedPreferredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['preferred']))
+        categorizedJobTokens=extractReqSkillsFromJobDesc(jobDescription)
+        if(len(categorizedJobTokens)>0):
+            requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens)
+        else:
+            requiredTokens = tokenizedRequiredNLP
+        preferredTokens =  set(tokenizedPreferredNLP & jobTokens)
     else:
-        requiredTokens = tokenizedRequiredNLP
-    preferredTokens =  set(tokenizedPreferredNLP & jobTokens)
-
+        requiredTokens = extractReqSkillsFromJobDesc(jobDescription)
+        preferredTokens =  set(jobTokens - requiredTokens)
+        
     # If no required or preferred, default to job description tokens
     if not requiredTokens and not preferredTokens:
         requiredTokens = jobTokens
@@ -122,7 +127,10 @@ def generateFeedback(resumeText, jobDescription, nlpResponse):
     missingKeywords.sort()
     # Generate suggestions
     suggestions = []
-    nlpSuggestionString = " ".join(nlpResponse["suggestions"]).lower()
+    if(nlpResponse):
+        nlpSuggestionString = " ".join(nlpResponse["suggestions"]).lower()
+    else:
+        nlpSuggestionString=""
     for keyword in missingKeywords:
         # prevent duplicate suggestions when combining nlp and dynamically generated
         if keyword in nlpSuggestionString:
@@ -133,5 +141,7 @@ def generateFeedback(resumeText, jobDescription, nlpResponse):
             suggestions.append(f"Consider including '{keyword}' in your resume to align with the job description.")
         else:
             suggestions.append(f"Add details that demonstrate your expertise in '{keyword}'.")
-
-    return {"missingKeywords": missingKeywords, "feedback": categorizeSuggestions(nlpResponse["suggestions"]+suggestions)}
+    if(nlpResponse):
+        return {"missingKeywords": missingKeywords, "feedback": categorizeSuggestions(nlpResponse["suggestions"]+suggestions)}
+    else:
+        return {"missingKeywords": missingKeywords, "feedback": categorizeSuggestions(suggestions)}

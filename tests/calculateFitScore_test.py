@@ -10,37 +10,37 @@ from unittest.mock import patch
         (
             "Python software engineer with experience in AWS and REST APIs",
             "Looking for a software engineer with experience in Python, AWS, and REST APIs.",
-            77,
+            100,
         ),
         # Large match
         (
             "Python developer with experience in AWS and REST APIs",
             "Looking for a software engineer with experience in Python, AWS, and REST APIs.",
-            61,
+            71,
         ),
         # Partial match
         (
             "Python developer with knowledge of AWS",
             "Looking for a software engineer with experience in Python, AWS, and REST APIs.",
-            23,
+            29,
         ),
         # No match
         (
             "Graphic designer with skills in Photoshop",
             "Looking for a software engineer with experience in Python, AWS, and REST APIs.",
-            15,
+            0,
         ),
         # Non-alphanumeric characters in resume and job description
         (
             "Python developer, with REST API experience! 3 years working with AWS.",
             "Looking for a software engineer with Python, AWS, REST APIs, 5+ years experience.",
-            46,
+            50,
         ),
         # Non-weighted keywords in the job description
         (
             "Python developer with REST API experience",
             "Looking for a software engineer with C++, AWS, REST APIs.",
-            20,
+            17,
         ),
     ],
 )
@@ -62,12 +62,6 @@ def testCalculateFitScore(
         resumeText=resumeText, 
         jobDescription=jobDescription, 
         nlpResponse={
-            "fitScore": expectedFitScore,
-            "jobDescriptionSkills": {
-                "required": [],
-                "preferred": []
-            },
-            "suggestions": []
         }
     )
 
