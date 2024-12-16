@@ -1,5 +1,5 @@
 from collections import Counter
-from backend.generate_feedback import tokenize, extractReqSkillsFromJobDesc 
+from backend.generate_feedback import tokenize, extractReqSkillsFromJobDesc, getStopWords
 
 def calculateFitScore(resumeText, jobDescription, nlpResponse):
     """
@@ -14,18 +14,24 @@ def calculateFitScore(resumeText, jobDescription, nlpResponse):
     if not resumeText or not jobDescription:
         return 0
 
-    resumeTokens = tokenize(resumeText)
-    jobTokens = tokenize(jobDescription)
+    stopWords = getStopWords()
+
+    resumeTokens = tokenize(resumeText)-stopWords
+    jobTokens = tokenize(jobDescription)-stopWords
 
     # Convert required and preferred to sets for comparison
-    tokenizedRequiredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['required']))
-    tokenizedPreferredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['preferred']))
-    categorizedJobTokens=extractReqSkillsFromJobDesc(jobDescription)
-    if(len(categorizedJobTokens)>0):
-        requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens)
+    if(nlpResponse):
+        tokenizedRequiredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['required']))
+        tokenizedPreferredNLP = tokenize(" ".join(nlpResponse['jobDescriptionSkills']['preferred']))
+        categorizedJobTokens=extractReqSkillsFromJobDesc(jobDescription)
+        if(len(categorizedJobTokens)>0):
+            requiredTokens = set(tokenizedRequiredNLP & categorizedJobTokens)
+        else:
+            requiredTokens = tokenizedRequiredNLP
+        preferredTokens =  set(tokenizedPreferredNLP & jobTokens)
     else:
-        requiredTokens = tokenizedRequiredNLP
-    preferredTokens =  set(tokenizedPreferredNLP & jobTokens)
+        requiredTokens = extractReqSkillsFromJobDesc(jobDescription)
+        preferredTokens =  set(jobTokens - requiredTokens)
 
     # Count matches for required and preferred keywords
     resumeCounter = Counter(resumeTokens)
@@ -37,15 +43,20 @@ def calculateFitScore(resumeText, jobDescription, nlpResponse):
     totalPreferred = len(preferredTokens)
 
     score = 0
-
-    # If there are required keywords, give them 70% of the score
-    if totalRequired > 0:
+    # edge case where no preferred
+    if totalPreferred == 0 and totalRequired > 0:
+        score += (preferredMatches / totalRequired) * 100
+    elif totalRequired > 0:
+        # If there are required keywords, give them 70% of the score
         score += (requiredMatches / totalRequired) * 70
 
-    # If there are preferred keywords, give them 30% of the score
-    if totalPreferred > 0:
+    # edge case where no required tokens
+    if totalRequired == 0 and totalPreferred > 0:
+        score += (preferredMatches / totalPreferred) * 100
+    elif totalPreferred > 0:
+         # If there are preferred keywords, give them 30% of the score
         score += (preferredMatches / totalPreferred) * 30
-    
+
     # get matching tokens
     matchingKeywords=[]
     if requiredTokens or preferredTokens:
@@ -65,5 +76,8 @@ def calculateFitScore(resumeText, jobDescription, nlpResponse):
             score = (matchingTokens / totalJobTokens) * 100
         else:
             score = 0
-            
-    return {"fitScore": round((score+nlpResponse['fitScore'])/2),"matchedKeywords":matchingKeywords}
+
+    if(nlpResponse):
+        return {"fitScore": round((score+nlpResponse['fitScore'])/2),"matchedKeywords":matchingKeywords}
+    else:
+        return {"fitScore": round(score),"matchedKeywords":matchingKeywords}
