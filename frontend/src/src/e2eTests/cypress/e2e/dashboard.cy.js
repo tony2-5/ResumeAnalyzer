@@ -76,6 +76,7 @@ describe('Dashboard', () => {
 
         // means job description accepted
         cy.get('.spinner-container').should('exist')
+        cy.wait(3000)
     })
 
     it('Data populates dashboard', () => {
